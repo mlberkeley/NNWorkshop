@@ -25,12 +25,12 @@ class Perceptron:
             return 1
         else:
             return 0
-class Decision(Perceptron)
+class Decision(Perceptron):
     """ Models a binary decision that someone would want to make.
 
     """
     def __init__(self, decision, num_factors, weights, factors=[]):
-        Perceptron.__init__(self, num_factors, weights, num_factors*5)
+        Perceptron.__init__(self, num_factors, weights, sum(weights)/2)
         self.decision = decision
         self.factors = factors
     def eval_factors(self):
@@ -39,13 +39,13 @@ class Decision(Perceptron)
         for i in range(self.ninputs):
             valid_inp = False
             while not valid_inp:
-                val = input(self.factors[i]+" ")
+                val = input(self.factors[i]+" ").upper()
                 if val == "Y":
                     valid_inp = True
-                    factors_input.append(1)
+                    factor_input.append(1)
                 elif val == "N":
                     valid_inp = True
-                    factors_input.append(0)
+                    factor_input.append(0)
                 else:
                     print("Invalid Input")
         self.test_factors(factor_input)
@@ -63,22 +63,22 @@ class Decision(Perceptron)
         num_factors = int(input('How many factors does this depend on? '))
         factors = []
         weights = []
-        for i in range(1, factors+1):
+        for i in range(1, num_factors+1):
 
             factor = input('Factor {0}: '.format(i))
             weight = int(input('How much does {0} matter to you (0-10)? '.format(factor)))
             while weight > 10 or weight < 0:
-                weight = int(input(''{0} isn't a valid value, enter a number 0 - 10: '.format(weight)))
+                weight = int(input("{0} isn't a valid value, enter a number 0 - 10: ".format(weight)))
             factors.append(factor)
             weights.append(weight)
         d = Decision(decision, num_factors, weights, factors)
         print('Decision Created!')
         keep_deciding = True
         while keep_deciding:
-            command = input('Type "q" to quit or "f" to try new factors ')
-            if command == "q":
+            command = input("Type 'q' to quit or 'f' to try new factors ")
+            if command == 'q':
                 keep_deciding = False
-            elif command == "f":
+            elif command == 'f':
                 d.eval_factors()
             else:
                 print("Invalid command")
