@@ -56,8 +56,14 @@ class Decision(Perceptron):
             print("You should", self.decision)
         else:
             print("You should not", self.decision)
-    def new_decision():
+    def new_decision(evaluate=True):
         """ Starts a command line prompt that evaluates a new decision
+        Args:
+        evaliate (boolean): whether or not we should evaluate the new decision or
+        just return it
+
+        Returns:
+        A decision that has been set up by the series of user prompts
         """
         decision = input('What would you like to decide today? ')
         num_factors = int(input('How many factors does this depend on? '))
@@ -73,7 +79,7 @@ class Decision(Perceptron):
             weights.append(weight)
         d = Decision(decision, num_factors, weights, factors)
         print('Decision Created!')
-        keep_deciding = True
+        keep_deciding = evaluate
         while keep_deciding:
             command = input("Type 'q' to quit or 'f' to try new factors ")
             if command == 'q':
@@ -82,3 +88,4 @@ class Decision(Perceptron):
                 d.eval_factors()
             else:
                 print("Invalid command")
+        return d
