@@ -1,2 +1,4 @@
 # NNWorkshop
-Repository built for a Neural Network Workshop associated with Robotics @ Berkeley
+Repository bu$ilt for a Neural Network Workshop associated with Robotics @ Berkeley
+# Documentation
+```Perception()```
