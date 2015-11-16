@@ -1,0 +1,3 @@
+*.pyc
+mnist_loader.py
+data/
