@@ -29,8 +29,10 @@ class Decision(Perceptron):
     """ Models a binary decision that someone would want to make.
 
     """
-    def __init__(self, decision, num_factors, weights, factors=[]):
-        Perceptron.__init__(self, num_factors, weights, sum(weights)/2)
+    def __init__(self, decision, num_factors, weights, factors=[], threshold=None):
+        if not threshold:
+            threshold = sum(weights)/2
+        Perceptron.__init__(self, num_factors, weights, threshold)
         self.decision = decision
         self.factors = factors
     def eval_factors(self):
@@ -89,3 +91,20 @@ class Decision(Perceptron):
             else:
                 print("Invalid command")
         return d
+class PerceptronNetwork:
+    def __init__(self, sizes):
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.weights = [np.random.randn(y, x)
+                        for x, y in zip(sizes[:-1], sizes[1:])]
+    def feedforward(self,a):
+        for b, w in zip(self.biases, self.weights):
+            a = np.dot(w, a)+b
+        return a
+    def adjust_weight(self, j, k, l, val):
+        '''
+        Sets the weight w^l_{jk} that connects the kth node in the (l-1) layer
+        to the jth node in the lth layer
+        j, k, and l are all indexed starting at 1. All of teh
+        '''
+        # Normalization to zero-based indexing
+        self.weights[(l-2)][(j-1)][(k-1)] = val
