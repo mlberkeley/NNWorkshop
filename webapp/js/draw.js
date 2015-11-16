@@ -40,21 +40,57 @@ function setupNodes(nodeSelector){
 function createNetwork(){
     var numLayers = layerSelector.val();
     var layerSizes = [];
-    for(i = 0; i < numLayers; i++){
-        var curLayer = $('layer'+i);
-        layerSizes.push(curLayer.val());
+    for(i = 1; i <= numLayers; i++){
+        var curLayer = $('#layer'+i);
+        layerSizes.push(parseInt(curLayer.val()));
+    }
+    var nodeRad = 30;
+    var separation = 40;
+
+    var x = 60;
+    for(layer = 0; layer < numLayers; layer++){
+        var layerSize = layerSizes[layer];
+
+        var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));//layerSize+(layerSize-1)*separation);
+        for(node = 0; node < layerSize; node++){
+            var nodeDrawing = new PIXI.Graphics();
+            nodeDrawing.beginFill(0xFFFFFF);
+            nodeDrawing.drawCircle(x, y, nodeRad);
+            stage.addChild(nodeDrawing);
+            y += 2*nodeRad + separation; // update the y value for the next circle
+
+        }
+        x += 2*nodeRad + 2*separation;
+        // weight generation
+        // if(layer == 0){
+        //
+        // }
+        // else if (layer == numLayers-1) {
+        //
+        // }
+        // else {
+        //
+        // }
     }
 
-}
 
-var renderer = PIXI.autoDetectRenderer(800, 600,{backgroundColor : 0xdfdfdf});
+
+}
+var displayWidth = 800;
+var displayHeight = 600;
+var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf});
 document.body.appendChild(renderer.view);
 
 // create the root of the scene graph
 var stage = new PIXI.Container();
-
-// make a drawing
+/* stuff for random
+// make a drawing*/
 var graphics = new PIXI.Graphics();
+graphics.lineStyle(1, 0, 1);
+graphics.moveTo(0,300);
+graphics.lineTo(800, 300);
+stage.addChild(graphics);
+/*
 graphics.beginFill(0xFF3300);
 graphics.moveTo(50,50);
 graphics.lineTo(250, 50);
@@ -76,14 +112,14 @@ bunny.position.x = 200;
 bunny.position.y = 150;
 
 stage.addChild(bunny);
-
+*/
 // start animating
 animate();
 function animate() {
     requestAnimationFrame(animate);
 
     // just for fun, let's rotate mr rabbit a little
-    bunny.rotation += 0.01;
+    // bunny.rotation += 0.01;
 
     // render the container
     renderer.render(stage);
