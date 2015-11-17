@@ -14,8 +14,9 @@
     </head>
     <body>
         <div id="network-params">
-            <select id="num-layers" onchange='newLayerCount(this.value)'></select>
-            <div id="layer-params"><p>lol</p></div>
+            <td>Number of layers </td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
+            <table id="layer-params"></table>
+            <button id='submit' onclick="createnetwork()">Create network</button>
         </div>
         <script src="js/perceptron.js"></script>
         <script src="js/draw.js"></script>
