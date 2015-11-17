@@ -7,7 +7,10 @@ function assert(condition, message) {
         throw message;
     }
 }
-function network()
+function newNetwork(sizes){
+    //sizes list of the sizes of the network
+
+}
 // function guassianRandom(){
 //     // TODO Make this actually guassian
 //     return Math.random();

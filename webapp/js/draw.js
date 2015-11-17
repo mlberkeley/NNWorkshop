@@ -11,15 +11,19 @@ for(i = 1; i <= maxLayers; i++){
     layerSelector.append(option);
 }
 layerSelector.val(Math.ceil(maxLayers/2));
+newLayerCount(layerSelector.val());
 function newLayerCount(numLayers){
     // creates the selection boxes
     var layerParams = $('#layer-params');
     layerParams.empty();
     // make this into a table
-    for (i = 0; i < numLayers; i++){
+    for (i = 1; i <= numLayers; i++){
+        var tableRow = $('<tr></tr>');
+        tableRow.append($('<td> Layer '+ i+"</td>"))
         var nodeSelector = $('<select id=layer'+i+'></select>');
         setupNodes(nodeSelector);
-        layerParams.append(nodeSelector);
+        tableRow.append(nodeSelector);
+        layerParams.append(tableRow)
     }
 }
 function setupNodes(nodeSelector){
@@ -33,7 +37,13 @@ function setupNodes(nodeSelector){
     }
     nodeSelector.val(Math.ceil(maxNodes/2));
 }
-for (j=1; j<= maxNodes; j++){
+function createNetwork(){
+    var numLayers = layerSelector.val();
+    var layerSizes = [];
+    for(i = 0; i < numLayers; i++){
+        var curLayer = $('layer'+i);
+        layerSizes.push(curLayer.val());
+    }
 
 }
 
@@ -77,4 +87,12 @@ function animate() {
 
     // render the container
     renderer.render(stage);
+}
+function drawArrow(start, end){
+
+    var graphics = new PIXI.Graphics();
+    graphics.lineStyle(10, 0, 1);
+    graphics.moveTo(start[0], start[1]);
+    graphics.lineTo(end[0], end[1]);
+    return graphics;
 }
