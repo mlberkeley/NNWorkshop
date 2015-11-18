@@ -27,7 +27,12 @@ function newLayerCount(numLayers){
     }
 }
 function setupNodes(nodeSelector){
-    // nodeSelector (DOM native-js element) - the select box for the specific layer
+    /*
+    Description:
+        Sets up the node select box with the proper number of options (maxNodes)
+    Args:
+        nodeSelector (DOM jquery element) - the select box for the specific layer
+    */
     nodeSelector.empty();
     for(j = 1; j <= maxNodes; j++){
         var option = $('<option></option>');
@@ -37,41 +42,118 @@ function setupNodes(nodeSelector){
     }
     nodeSelector.val(Math.ceil(maxNodes/2));
 }
-function createNetwork(){
+
+function getBlankNet(){
+    /*
+    Description :
+        Returns an empty container. Abstraction to make future changes easier.
+    */
+    return new PIXI.Container();
+
+}
+function addDrawnNet(newNet){
+    /*
+    Description:
+        Removes the old network and adds the new network.
+    */
+    var board = stage;
+    for (var i = 0; i < board.children.length; i++) {
+    	board.removeChild(board.children[i]);
+    }
+    board.addChild(newNet);
+}
+function getLayerSizes(){
+    /*
+    Description:
+        Returns the layer sizes from the selection boxes.
+    */
     var numLayers = layerSelector.val();
     var layerSizes = [];
     for(i = 1; i <= numLayers; i++){
         var curLayer = $('#layer'+i);
         layerSizes.push(parseInt(curLayer.val()));
     }
-    var nodeRad = 30;
-    var separation = 40;
+    return layerSizes;
+}
+function Node(){
+    this.x = 0;
+    this.y = 0;
+    this.rad = nodeRad;
+    this.getDrawing = function(){
+        var nodeDrawing = new PIXI.Graphics();
+        nodeDrawing.beginFill(0xFFFFFF);
+        nodeDrawing.drawCircle(this.x, this.y, this.rad);
+        return nodeDrawing;
+    };
+    this.inputCd = function(){
+        return [this.x-this.rad,this.y];
+    };
+    this.outputCd = function(){
+        right = this.inputCd();
+        return [right[0]+this.rad*2, right[1]];
+    };
+}
+function drawArrow(start, end){
+    var graphics = new PIXI.Graphics();
+    graphics.lineStyle(1, .1, 1);
+    graphics.moveTo(start[0], start[1]);
+    graphics.lineTo(end[0], end[1]);
+    return graphics;
+}
+function Weight(){
+    this.left = [0,0];
+    this.right = [0,0];
+    this.getDrawing = function(){
+        return drawArrow(this.left, this.right);
+    };
+    this.value = 0;
+}
+var nodes = [], // nodes organized by layer
+    weights = []; // weights organized by layer
+var nodeRad = 30;
+var separation = 40;
+function createNetwork(){
+    /*
+    Description:
+        Regenerates the new network based on the values selected in the layers
+    */
+    var newNet = getBlankNet();
+    var numLayers = layerSelector.val();
+    var layerSizes = getLayerSizes();
+
 
     var x = 60;
-    for(layer = 0; layer < numLayers; layer++){
+    for(var layer = 0; layer < numLayers; layer++){
         var layerSize = layerSizes[layer];
-
-        var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));//layerSize+(layerSize-1)*separation);
-        for(node = 0; node < layerSize; node++){
-            var nodeDrawing = new PIXI.Graphics();
-            nodeDrawing.beginFill(0xFFFFFF);
-            nodeDrawing.drawCircle(x, y, nodeRad);
-            stage.addChild(nodeDrawing);
+        var nodeLayer = [];
+        var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));
+        for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
+            var curNode = new Node();
+            curNode.x = x;
+            curNode.y = y;
+            newNet.addChild(curNode.getDrawing());
+            nodeLayer.push(curNode);
             y += 2*nodeRad + separation; // update the y value for the next circle
 
         }
         x += 2*nodeRad + 2*separation;
-        // weight generation
-        // if(layer == 0){
-        //
-        // }
-        // else if (layer == numLayers-1) {
-        //
-        // }
-        // else {
-        //
-        // }
+        if (layer != 0){
+            prevLayer = nodes[nodes.length-1];
+            for(var nct = 0; nct < nodeLayer.length; nct++){
+                var node = nodeLayer[nct];
+                for(var pct = 0; pct < prevLayer.length; pct++){
+                    var prevNode = prevLayer[pct];
+                    var weight = new Weight();
+                    weight.right = node.inputCd();
+                    weight.left = prevNode.outputCd();
+                    newNet.addChild(weight.getDrawing());
+                }
+            }
+        }
+        nodes.push(nodeLayer);
     }
+    addDrawnNet(newNet);
+
 
 
 
@@ -123,12 +205,4 @@ function animate() {
 
     // render the container
     renderer.render(stage);
-}
-function drawArrow(start, end){
-
-    var graphics = new PIXI.Graphics();
-    graphics.lineStyle(10, 0, 1);
-    graphics.moveTo(start[0], start[1]);
-    graphics.lineTo(end[0], end[1]);
-    return graphics;
 }
