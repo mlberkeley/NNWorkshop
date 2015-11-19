@@ -10,7 +10,8 @@ for(i = 1; i <= maxLayers; i++){
     option.innerHTML = i;
     layerSelector.append(option);
 }
-layerSelector.val(Math.ceil(maxLayers/2));
+// layerSelector.val(Math.ceil(maxLayers/2));
+layerSelector.val(2);
 newLayerCount(layerSelector.val());
 function newLayerCount(numLayers){
     // creates the selection boxes
@@ -40,7 +41,8 @@ function setupNodes(nodeSelector){
         option.html(j);
         nodeSelector.append(option);
     }
-    nodeSelector.val(Math.ceil(maxNodes/2));
+    // nodeSelector.val(Math.ceil(maxNodes/2));
+    nodeSelector.val(2);
 }
 
 function getBlankNet(){
@@ -85,20 +87,61 @@ function Node(){
         nodeDrawing.drawCircle(this.x, this.y, this.rad);
         return nodeDrawing;
     };
-    this.inputCd = function(){
-        return [this.x-this.rad,this.y];
+    this.inputCd = function(num_inputs, cur_input){
+        /*
+        Description:
+            returns the position on the circle that the input would touch
+        Args:
+            num_inputs : the number of inputs that go into a node
+            cur_input : the zero-based input index that we want the input pos for.
+        */
+        var limit = 2*Math.PI/3;
+        var totalAngle = 2/15*Math.PI*num_inputs;
+        if (totalAngle > limit){
+            totalAngle = limit;
+        }
+        var division = totalAngle/(num_inputs+1);
+        var centerOffSet = totalAngle/2-division*(cur_input+1);
+        console.log("num_inputs",num_inputs+"\ndivsion"+ division*180/Math.PI+"\n"+ centerOffSet+division*180/Math.PI);
+        return [this.x-this.rad*Math.cos(centerOffSet),this.y-this.rad*Math.sin(centerOffSet)];
+        // return [this.x-this.rad, this.y]
     };
     this.outputCd = function(){
-        right = this.inputCd();
-        return [right[0]+this.rad*2, right[1]];
+
+        return [this.x+this.rad, this.y];
     };
 }
 function drawArrow(start, end){
-    var graphics = new PIXI.Graphics();
-    graphics.lineStyle(1, .1, 1);
-    graphics.moveTo(start[0], start[1]);
-    graphics.lineTo(end[0], end[1]);
-    return graphics;
+    /*
+    returns a graphics object that has a directed graph
+    */
+    // arrow head setup
+    var arrowSL = 10;
+    var length = Math.sqrt(Math.pow(start[0]-end[0], 2) + Math.pow(start[1]-end[1],2));
+    //draw and position the arrowhead
+    var arrowHead = new PIXI.Graphics();
+    arrowHead.lineStyle(1, 0, 1);
+    arrowHead.beginFill(0x010101);
+    arrowHead.moveTo(0,0);
+    arrowHead.lineTo(arrowSL*Math.sin(Math.PI/3), arrowSL/2);
+    arrowHead.lineTo(0, arrowSL);
+    arrowHead.lineTo(1/4*arrowSL*Math.sin(Math.PI/3), arrowSL/2);
+    arrowHead.lineTo(0,0);
+    arrowHead.endFill();
+    arrowHead.x = length - arrowSL*Math.cos(Math.PI/6);
+    arrowHead.y = - arrowSL*Math.sin(Math.PI/6);
+
+    var line = new PIXI.Graphics();
+    line.lineStyle(1, 0, 1);
+    line.moveTo(0, 0);
+    line.lineTo(length, 0);
+
+    line.addChild(arrowHead);
+    line.x = start[0];
+    line.y = start[1];
+    line.rotation = Math.atan((end[1]-start[1])/(end[0]-start[0]));
+    return line;
+    // return arrowHead;
 }
 function Weight(){
     this.left = [0,0];
@@ -122,7 +165,7 @@ function createNetwork(){
     var layerSizes = getLayerSizes();
 
 
-    var x = 60;
+    var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     for(var layer = 0; layer < numLayers; layer++){
         var layerSize = layerSizes[layer];
         var nodeLayer = [];
@@ -141,10 +184,12 @@ function createNetwork(){
             prevLayer = nodes[nodes.length-1];
             for(var nct = 0; nct < nodeLayer.length; nct++){
                 var node = nodeLayer[nct];
-                for(var pct = 0; pct < prevLayer.length; pct++){
+                var n = prevLayer.length;
+                console.log('n',n)
+                for(var pct = 0; pct < n; pct++){
                     var prevNode = prevLayer[pct];
                     var weight = new Weight();
-                    weight.right = node.inputCd();
+                    weight.right = node.inputCd(n, pct);
                     weight.left = prevNode.outputCd();
                     newNet.addChild(weight.getDrawing());
                 }
@@ -160,7 +205,7 @@ function createNetwork(){
 }
 var displayWidth = 800;
 var displayHeight = 600;
-var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf});
+var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf, antialias : true});
 document.body.appendChild(renderer.view);
 
 // create the root of the scene graph
@@ -169,40 +214,19 @@ var stage = new PIXI.Container();
 // make a drawing*/
 var graphics = new PIXI.Graphics();
 graphics.lineStyle(1, 0, 1);
-graphics.moveTo(0,300);
-graphics.lineTo(800, 300);
-stage.addChild(graphics);
-/*
-graphics.beginFill(0xFF3300);
-graphics.moveTo(50,50);
-graphics.lineTo(250, 50);
-graphics.lineTo(100, 100);
-graphics.lineTo(250, 220);
-graphics.lineTo(50, 220);
-graphics.lineTo(50, 50);
+graphics.beginFill(0);
+graphics.moveTo(0,0);
+var length = 10;
+graphics.lineTo(length,0);
+graphics.lineTo(length/2,length*Math.sin(Math.PI/3));
+graphics.lineTo(0,0);
 graphics.endFill();
-var texture = graphics.generateTexture();
-// create a new Sprite using the texture
-var bunny = new PIXI.Sprite(texture);
+stage.addChild(graphics);
 
-// center the sprite's anchor point
-bunny.anchor.x = 0.5;
-bunny.anchor.y = 0.5;
-
-// move the sprite to the center of the screen
-bunny.position.x = 200;
-bunny.position.y = 150;
-
-stage.addChild(bunny);
-*/
 // start animating
 animate();
 function animate() {
     requestAnimationFrame(animate);
-
-    // just for fun, let's rotate mr rabbit a little
-    // bunny.rotation += 0.01;
-
     // render the container
     renderer.render(stage);
 }
