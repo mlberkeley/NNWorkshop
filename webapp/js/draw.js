@@ -143,11 +143,31 @@ function drawArrow(start, end){
     return line;
     // return arrowHead;
 }
-function Weight(){
+function Weight(inputNode, outputNode, layer){
+    /*
+    Description:
+        The weight object genreator that represents that contains clicking logic, information
+        on the nodes that it is connected to etc.
+        This weight is w^l_{jk} s.t. It connects the kth node in the l-1 layer to
+        the jth node in the lth layer. All indexes are zero-based.
+    Args:
+        inputNode: the zero-based kth node of the (l-1)th layer.
+        outputNode: the zero-based jth node of the lth layer.
+        layer: layer number l.
+    */
     this.left = [0,0];
     this.right = [0,0];
+    this.j = outputNode;
+    this.k = inputNode;
+    this.l = layer;
     this.getDrawing = function(){
-        return drawArrow(this.left, this.right);
+        var arrow = drawArrow(this.left, this.right);
+        var sprite = new PIXI.Sprite()
+        sprite.interactive = true;
+        sprite.click = function(){
+            console.log()
+        }
+        return sprite;
     };
     this.value = 0;
 }
@@ -188,7 +208,7 @@ function createNetwork(){
                 console.log('n',n)
                 for(var pct = 0; pct < n; pct++){
                     var prevNode = prevLayer[pct];
-                    var weight = new Weight();
+                    var weight = new Weight(nct, pct, layer);
                     weight.right = node.inputCd(n, pct);
                     weight.left = prevNode.outputCd();
                     newNet.addChild(weight.getDrawing());
