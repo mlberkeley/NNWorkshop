@@ -1,0 +1,14 @@
+application: neuralnetdemo
+version: alpha-001
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /
+  static_files: index.html
+  upload: index.html
+- url: /js
+  static_dir: js
+- url: /css
+  static_dir: css

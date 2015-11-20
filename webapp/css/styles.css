@@ -26,6 +26,9 @@
     border: 1px solid #EFEFEF;
     border-radius: 3px;*/
 }
+.editor > h3{
+    margin-left: 10px;
+}
 .editor > #input-field{
     position: absolute;
     padding-left:3px;

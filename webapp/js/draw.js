@@ -228,9 +228,11 @@ function Weight(inputNode, outputNode, layer){
 
     };
     this.sprite = null;
+    // TODO make this change hte sprite color to red
     this.setSelect = function(){
         this.getDrawing();
     };
+    //TODO make this change the sprite color to black
     this.deselect = function(){
 
     };
@@ -239,7 +241,7 @@ function Weight(inputNode, outputNode, layer){
 
             return this.sprite;
         }
-        console.log(this)
+        // console.log(this)
         var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
         sprite.interactive = true;
         sprite.anchor.y = 0.5;
@@ -277,9 +279,6 @@ function Weight(inputNode, outputNode, layer){
     }
     this.value = 0;
 }
-function setAllWeights(){
-    
-}
 function createNetwork(){
     /*
     Description:
@@ -306,11 +305,12 @@ function createNetwork(){
         }
         x += 2*nodeRad + 2*separation;
         // generate the weights
-        // We don't generate weights for the first layer
-        if (layer != 0){
+
+        if (layer != 0){ // We don't generate weights for the first layer
             prevLayer = nodes[nodes.length-1];
+            var weightLayer = []
             for(var nct = 0; nct < nodeLayer.length; nct++){
-                var weightLayer = []
+
                 var node = nodeLayer[nct];
                 var n = prevLayer.length;
                 for(var pct = 0; pct < n; pct++){
@@ -321,18 +321,39 @@ function createNetwork(){
                     weightLayer.push(weight);
                     newNet.addChild(weight.getSprite());
                 }
-                weights.push(weightLayer);
+
             }
+            weights.push(weightLayer);
         }
         nodes.push(nodeLayer);
     }
     addDrawnNet(newNet);
+}
 
-
+function newWeightVals(weightVals){
+    // run a check to make sure the sizes are correct
+    assert(weightVals.length == weights.length, "Mismatched number of layers.");
+    for(var lIdx = 0; lIdx < weightVals.length; lIdx ++){
+        assert(weightVals[lIdx].length == weights[lIdx].length,
+            "Mismatched number of weights ({0} vs {1} in layer {2}."
+            .format(weightVals[lIdx].length, weights[lIdx].length, lIdx));
+    }
+    var l = 0;
+    for(layerct in weights){
+        var layer = weights[layerct];
+        // console.log(layer);
+        var j = 0;
+        for (weightct in layer){
+            weight = layer[weightct];
+            // console.log(weight);
+            weight.value = weightVals[l][j];
+            j++;
+        }
+        l++;
+    }
 
 
 }
-
 function animate() {
     requestAnimationFrame(animate);
     // for(layer in weights){
