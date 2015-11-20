@@ -24,8 +24,11 @@
                 <h3>Editing:</h3>
                 <div id ='reference'>w^{0}_[{1},{2}]</div>
                 <div id='input-field'>
-                    <input type="text" name="FirstName" value="Mickey">
-                    <button value="Create">Update</button>
+                    <input id='field-val' type="text">
+                    <div class='button-group'>
+                        <button value="Create" onclick="updateWeight()">Update</button>
+                        <button value="Cancel" onclick="closeEditor()">Cancel</button>
+                    </div>
                 </div>
 
             </div>

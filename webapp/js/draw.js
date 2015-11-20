@@ -91,10 +91,25 @@ function editWeight(weight){
 
     currentWeight = weight;
     weight.setSelect();
+
+    $('#field-val').val(weight.value);
+}
+function updateWeight(){
+    newVal = $('#field-val').val();
+    newVal = parseInt(newVal)
+    if (newVal != NaN){
+        currentWeight.value = newVal;
+
+    }
+    else{
+        console.log('Could not update value to none number')
+    }
+    closeEditor();
 }
 function closeEditor(){
-    $('#editor').hide();
+    $('.editor').hide();
     currentWeight.deselect();
+    currentWeight = null;
 }
 function addDrawnNet(newNet){
     /*
@@ -157,25 +172,11 @@ function drawArrow(start, end, color){
     /*
     returns a graphics object that has a directed graph
     */
-    // arrow head setup
     if (color == null){
         color=0x000000;
     }
     var arrowSL = 10;
     var length = Math.sqrt(Math.pow(start[0]-end[0], 2) + Math.pow(start[1]-end[1],2));
-    //draw and position the arrowhead
-    // var arrowHead = new PIXI.Graphics();
-    // arrowHead.lineStyle(1, 0, 1);
-    // arrowHead.beginFill(0x010101);
-    // arrowHead.moveTo(0,0);
-    // arrowHead.lineTo(arrowSL*Math.sin(Math.PI/3), arrowSL/2);
-    // arrowHead.lineTo(0, arrowSL);
-    // arrowHead.lineTo(1/4*arrowSL*Math.sin(Math.PI/3), arrowSL/2);
-    // arrowHead.lineTo(0,0);
-    // arrowHead.endFill();
-    // arrowHead.x = length - ;
-    // arrowHead.y = - arrowSL*Math.sin(Math.PI/6);
-
     var line = new PIXI.Graphics();
     line.lineStyle(1, color, 1);
     line.moveTo(0, 0);
@@ -184,7 +185,7 @@ function drawArrow(start, end, color){
     line.lineStyle(1,color,1);
     line.beginFill(0x010101);
     line.lineTo(length - arrowSL*Math.cos(Math.PI/6),  -arrowSL*Math.sin(Math.PI/6));
-    line.lineTo(length- 1/4*arrowSL*Math.cos(Math.PI/6), 0);
+    line.lineTo(length- 3/4*arrowSL*Math.cos(Math.PI/6), 0);
     line.lineTo(length-arrowSL*Math.cos(Math.PI/6), arrowSL*Math.sin(Math.PI/6));
     line.lineTo(length, 0);
     // line.addChild(arrowHead);
@@ -276,7 +277,9 @@ function Weight(inputNode, outputNode, layer){
     }
     this.value = 0;
 }
-
+function setAllWeights(){
+    
+}
 function createNetwork(){
     /*
     Description:
