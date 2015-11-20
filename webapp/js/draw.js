@@ -2,8 +2,15 @@
 
 var maxLayers = 5;
 var maxNodes = 5;
+var nodeRad = 30;
+var separation = 40;
 
+var nodes = [], // nodes organized by layer
+    weights = []; // weights organized by layer
+
+var currentWeight = null;
 var layerSelector = $('#num-layers');
+$('.editor').hide();
 for(i = 1; i <= maxLayers; i++){
     var option = document.createElement('option');
     option.value = i;
@@ -11,8 +18,30 @@ for(i = 1; i <= maxLayers; i++){
     layerSelector.append(option);
 }
 // layerSelector.val(Math.ceil(maxLayers/2));
-layerSelector.val(2);
+layerSelector.val(3);
 newLayerCount(layerSelector.val());
+
+
+
+
+var displayWidth = 800;
+var displayHeight = 600;
+var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf, antialias : true});
+$('#viewport').append(renderer.view);
+
+// create the root of the scene graph
+var stage = new PIXI.Container();
+
+// start animating
+animate();
+
+// draw the network
+createNetwork();
+
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////           Functions for drawing       ////////////////////
+////////////////////////////////////////////////////////////////////////////////
 function newLayerCount(numLayers){
     // creates the selection boxes
     var layerParams = $('#layer-params');
@@ -52,6 +81,20 @@ function getBlankNet(){
     */
     return new PIXI.Container();
 
+}
+function editWeight(weight){
+    $('.editor').show();
+    $('#reference').html(weight.repr());
+
+    if (currentWeight != null)
+        currentWeight.deselect();
+
+    currentWeight = weight;
+    weight.setSelect();
+}
+function closeEditor(){
+    $('#editor').hide();
+    currentWeight.deselect();
 }
 function addDrawnNet(newNet){
     /*
@@ -102,7 +145,6 @@ function Node(){
         }
         var division = totalAngle/(num_inputs+1);
         var centerOffSet = totalAngle/2-division*(cur_input+1);
-        console.log("num_inputs",num_inputs+"\ndivsion"+ division*180/Math.PI+"\n"+ centerOffSet+division*180/Math.PI);
         return [this.x-this.rad*Math.cos(centerOffSet),this.y-this.rad*Math.sin(centerOffSet)];
         // return [this.x-this.rad, this.y]
     };
@@ -111,38 +153,52 @@ function Node(){
         return [this.x+this.rad, this.y];
     };
 }
-function drawArrow(start, end){
+function drawArrow(start, end, color){
     /*
     returns a graphics object that has a directed graph
     */
     // arrow head setup
+    if (color == null){
+        color=0x000000;
+    }
     var arrowSL = 10;
     var length = Math.sqrt(Math.pow(start[0]-end[0], 2) + Math.pow(start[1]-end[1],2));
     //draw and position the arrowhead
-    var arrowHead = new PIXI.Graphics();
-    arrowHead.lineStyle(1, 0, 1);
-    arrowHead.beginFill(0x010101);
-    arrowHead.moveTo(0,0);
-    arrowHead.lineTo(arrowSL*Math.sin(Math.PI/3), arrowSL/2);
-    arrowHead.lineTo(0, arrowSL);
-    arrowHead.lineTo(1/4*arrowSL*Math.sin(Math.PI/3), arrowSL/2);
-    arrowHead.lineTo(0,0);
-    arrowHead.endFill();
-    arrowHead.x = length - arrowSL*Math.cos(Math.PI/6);
-    arrowHead.y = - arrowSL*Math.sin(Math.PI/6);
+    // var arrowHead = new PIXI.Graphics();
+    // arrowHead.lineStyle(1, 0, 1);
+    // arrowHead.beginFill(0x010101);
+    // arrowHead.moveTo(0,0);
+    // arrowHead.lineTo(arrowSL*Math.sin(Math.PI/3), arrowSL/2);
+    // arrowHead.lineTo(0, arrowSL);
+    // arrowHead.lineTo(1/4*arrowSL*Math.sin(Math.PI/3), arrowSL/2);
+    // arrowHead.lineTo(0,0);
+    // arrowHead.endFill();
+    // arrowHead.x = length - ;
+    // arrowHead.y = - arrowSL*Math.sin(Math.PI/6);
 
     var line = new PIXI.Graphics();
-    line.lineStyle(1, 0, 1);
+    line.lineStyle(1, color, 1);
     line.moveTo(0, 0);
     line.lineTo(length, 0);
-
-    line.addChild(arrowHead);
+    //draw arrowHead
+    line.lineStyle(1,color,1);
+    line.beginFill(0x010101);
+    line.lineTo(length - arrowSL*Math.cos(Math.PI/6),  -arrowSL*Math.sin(Math.PI/6));
+    line.lineTo(length- 1/4*arrowSL*Math.cos(Math.PI/6), 0);
+    line.lineTo(length-arrowSL*Math.cos(Math.PI/6), arrowSL*Math.sin(Math.PI/6));
+    line.lineTo(length, 0);
+    // line.addChild(arrowHead);
     line.x = start[0];
     line.y = start[1];
-    line.rotation = Math.atan((end[1]-start[1])/(end[0]-start[0]));
+    line.rotation = getAngle(end, start);
+
     return line;
     // return arrowHead;
 }
+function getAngle (opp, adj){
+    return Math.atan((opp[1]-adj[1])/(opp[0]-adj[0]));
+}
+var id = 0;
 function Weight(inputNode, outputNode, layer){
     /*
     Description:
@@ -160,21 +216,67 @@ function Weight(inputNode, outputNode, layer){
     this.j = outputNode;
     this.k = inputNode;
     this.l = layer;
-    this.getDrawing = function(){
-        var arrow = drawArrow(this.left, this.right);
-        var sprite = new PIXI.Sprite()
-        sprite.interactive = true;
-        sprite.click = function(){
-            console.log()
+    this.id = id;
+    id+=1;
+    this.updateDetails = function(weight){
+        return function(){
+            editWeight(weight);
+            console.log(weight.repr());
         }
-        return sprite;
+
+
     };
+    this.sprite = null;
+    this.setSelect = function(){
+        this.getDrawing();
+    };
+    this.deselect = function(){
+
+    };
+    this.getSprite = function(){
+        if(this.sprite!=null){
+
+            return this.sprite;
+        }
+        console.log(this)
+        var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
+        sprite.interactive = true;
+        sprite.anchor.y = 0.5;
+        sprite.x = this.left[0];
+        sprite.y = this.left[1];
+        sprite.rotation = getAngle(this.right, this.left);
+        sprite.click = this.updateDetails(this);
+        this.sprite = sprite;
+        return this.sprite;
+    }
+    this.getDrawing = function(){
+        // if(selected != null)
+        //     var arrow = drawArrow(this.left, this.right, 0xFF0000);
+        // else
+        var arrow = drawArrow(this.left, this.right, 0x000000);
+
+        return arrow;
+        // var sprite = new PIXI.Sprite(arrow.generateTexture());
+        // sprite.interactive = true;
+        // sprite.anchor.y = 0.5;
+        // sprite.x = this.left[0];
+        // sprite.y = this.left[1];
+        // sprite.rotation = getAngle(this.right, this.left);
+        // // sprite.rotation = Math.PI*Math.random();
+        // // details = [this.l, this.j, this.k, this.id]
+        // sprite.click = this.updateDetails(this);//function(){
+        // //     // console.log(details);
+        // //     console.log("w^{0}_[{1},{2}], id: {3}".format(details[0], details[1], details[2], details[3]));
+        // // };
+        // this.sprite = sprite;
+        // return sprite;
+    };
+    this.repr = function(){
+        return "w^{0}_[{1},{2}]".format(this.l,this.j,this.k);
+    }
     this.value = 0;
 }
-var nodes = [], // nodes organized by layer
-    weights = []; // weights organized by layer
-var nodeRad = 30;
-var separation = 40;
+
 function createNetwork(){
     /*
     Description:
@@ -200,19 +302,23 @@ function createNetwork(){
 
         }
         x += 2*nodeRad + 2*separation;
+        // generate the weights
+        // We don't generate weights for the first layer
         if (layer != 0){
             prevLayer = nodes[nodes.length-1];
             for(var nct = 0; nct < nodeLayer.length; nct++){
+                var weightLayer = []
                 var node = nodeLayer[nct];
                 var n = prevLayer.length;
-                console.log('n',n)
                 for(var pct = 0; pct < n; pct++){
                     var prevNode = prevLayer[pct];
                     var weight = new Weight(nct, pct, layer);
                     weight.right = node.inputCd(n, pct);
                     weight.left = prevNode.outputCd();
-                    newNet.addChild(weight.getDrawing());
+                    weightLayer.push(weight);
+                    newNet.addChild(weight.getSprite());
                 }
+                weights.push(weightLayer);
             }
         }
         nodes.push(nodeLayer);
@@ -223,30 +329,14 @@ function createNetwork(){
 
 
 }
-var displayWidth = 800;
-var displayHeight = 600;
-var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf, antialias : true});
-document.body.appendChild(renderer.view);
 
-// create the root of the scene graph
-var stage = new PIXI.Container();
-/* stuff for random
-// make a drawing*/
-var graphics = new PIXI.Graphics();
-graphics.lineStyle(1, 0, 1);
-graphics.beginFill(0);
-graphics.moveTo(0,0);
-var length = 10;
-graphics.lineTo(length,0);
-graphics.lineTo(length/2,length*Math.sin(Math.PI/3));
-graphics.lineTo(0,0);
-graphics.endFill();
-stage.addChild(graphics);
-
-// start animating
-animate();
 function animate() {
     requestAnimationFrame(animate);
+    // for(layer in weights){
+    //     for(weight in layer){
+    //         weight
+    //     }
+    // }
     // render the container
     renderer.render(stage);
 }

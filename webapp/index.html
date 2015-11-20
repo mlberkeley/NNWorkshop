@@ -10,6 +10,7 @@
         <meta name="author" content="">
         <script src="js/pixi.min.js"></script>
         <script src="js/jquery.min.js"></script>
+        <link rel='stylesheet' type='text/css' href='css/styles.css'>
         <title>Perceptron Demo</title>
     </head>
     <body>
@@ -17,6 +18,18 @@
             <td>Number of layers </td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
             <table id="layer-params"></table>
             <button id='submit' onclick="createNetwork()">Create network</button>
+        </div>
+        <div id='viewport'>
+            <div class='editor'>
+                <h3>Editing:</h3>
+                <div id ='reference'>w^{0}_[{1},{2}]</div>
+                <div id='input-field'>
+                    <input type="text" name="FirstName" value="Mickey">
+                    <button value="Create">Update</button>
+                </div>
+
+            </div>
+
         </div>
         <script src="js/perceptron.js"></script>
         <script src="js/util.js"></script>
