@@ -5,8 +5,6 @@ var maxNodes = 5;
 var nodeRad = 30;
 var separation = 40;
 
-var nodes = [], // nodes organized by layer
-    weights = []; // weights organized by layer
 
 var currentWeight = null;
 var layerSelector = $('#num-layers');
@@ -135,44 +133,12 @@ function getLayerSizes(){
     }
     return layerSizes;
 }
-function Node(){
-    this.x = 0;
-    this.y = 0;
-    this.rad = nodeRad;
-    this.getDrawing = function(){
-        var nodeDrawing = new PIXI.Graphics();
-        nodeDrawing.beginFill(0xFFFFFF);
-        nodeDrawing.drawCircle(this.x, this.y, this.rad);
-        return nodeDrawing;
-    };
-    this.inputCd = function(num_inputs, cur_input){
-        /*
-        Description:
-            returns the position on the circle that the input would touch
-        Args:
-            num_inputs : the number of inputs that go into a node
-            cur_input : the zero-based input index that we want the input pos for.
-        */
-        var limit = 2*Math.PI/3;
-        var totalAngle = 2/15*Math.PI*num_inputs;
-        if (totalAngle > limit){
-            totalAngle = limit;
-        }
-        var division = totalAngle/(num_inputs+1);
-        var centerOffSet = totalAngle/2-division*(cur_input+1);
-        return [this.x-this.rad*Math.cos(centerOffSet),this.y-this.rad*Math.sin(centerOffSet)];
-        // return [this.x-this.rad, this.y]
-    };
-    this.outputCd = function(){
 
-        return [this.x+this.rad, this.y];
-    };
-}
 function drawArrow(start, end, color){
     /*
     returns a graphics object that has a directed graph
     */
-    if (color == null){
+    if (color == undefined){
         color=0x000000;
     }
     var arrowSL = 10;
@@ -183,11 +149,12 @@ function drawArrow(start, end, color){
     line.lineTo(length, 0);
     //draw arrowHead
     line.lineStyle(1,color,1);
-    line.beginFill(0x010101);
+    line.beginFill(color);
     line.lineTo(length - arrowSL*Math.cos(Math.PI/6),  -arrowSL*Math.sin(Math.PI/6));
     line.lineTo(length- 3/4*arrowSL*Math.cos(Math.PI/6), 0);
     line.lineTo(length-arrowSL*Math.cos(Math.PI/6), arrowSL*Math.sin(Math.PI/6));
     line.lineTo(length, 0);
+    line.endFill()
     // line.addChild(arrowHead);
     line.x = start[0];
     line.y = start[1];
@@ -200,85 +167,7 @@ function getAngle (opp, adj){
     return Math.atan((opp[1]-adj[1])/(opp[0]-adj[0]));
 }
 var id = 0;
-function Weight(inputNode, outputNode, layer){
-    /*
-    Description:
-        The weight object genreator that represents that contains clicking logic, information
-        on the nodes that it is connected to etc.
-        This weight is w^l_{jk} s.t. It connects the kth node in the l-1 layer to
-        the jth node in the lth layer. All indexes are zero-based.
-    Args:
-        inputNode: the zero-based kth node of the (l-1)th layer.
-        outputNode: the zero-based jth node of the lth layer.
-        layer: layer number l.
-    */
-    this.left = [0,0];
-    this.right = [0,0];
-    this.j = outputNode;
-    this.k = inputNode;
-    this.l = layer;
-    this.id = id;
-    id+=1;
-    this.updateDetails = function(weight){
-        return function(){
-            editWeight(weight);
-            console.log(weight.repr());
-        }
 
-
-    };
-    this.sprite = null;
-    // TODO make this change hte sprite color to red
-    this.setSelect = function(){
-        this.getDrawing();
-    };
-    //TODO make this change the sprite color to black
-    this.deselect = function(){
-
-    };
-    this.getSprite = function(){
-        if(this.sprite!=null){
-
-            return this.sprite;
-        }
-        // console.log(this)
-        var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
-        sprite.interactive = true;
-        sprite.anchor.y = 0.5;
-        sprite.x = this.left[0];
-        sprite.y = this.left[1];
-        sprite.rotation = getAngle(this.right, this.left);
-        sprite.click = this.updateDetails(this);
-        this.sprite = sprite;
-        return this.sprite;
-    }
-    this.getDrawing = function(){
-        // if(selected != null)
-        //     var arrow = drawArrow(this.left, this.right, 0xFF0000);
-        // else
-        var arrow = drawArrow(this.left, this.right, 0x000000);
-
-        return arrow;
-        // var sprite = new PIXI.Sprite(arrow.generateTexture());
-        // sprite.interactive = true;
-        // sprite.anchor.y = 0.5;
-        // sprite.x = this.left[0];
-        // sprite.y = this.left[1];
-        // sprite.rotation = getAngle(this.right, this.left);
-        // // sprite.rotation = Math.PI*Math.random();
-        // // details = [this.l, this.j, this.k, this.id]
-        // sprite.click = this.updateDetails(this);//function(){
-        // //     // console.log(details);
-        // //     console.log("w^{0}_[{1},{2}], id: {3}".format(details[0], details[1], details[2], details[3]));
-        // // };
-        // this.sprite = sprite;
-        // return sprite;
-    };
-    this.repr = function(){
-        return "w^{0}_[{1},{2}]".format(this.l,this.j,this.k);
-    }
-    this.value = 0;
-}
 function createNetwork(){
     /*
     Description:
@@ -287,7 +176,7 @@ function createNetwork(){
     var newNet = getBlankNet();
     var numLayers = layerSelector.val();
     var layerSizes = getLayerSizes();
-
+    nodes = []; weights = [];
 
     var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     for(var layer = 0; layer < numLayers; layer++){
@@ -309,18 +198,20 @@ function createNetwork(){
         if (layer != 0){ // We don't generate weights for the first layer
             prevLayer = nodes[nodes.length-1];
             var weightLayer = []
-            for(var nct = 0; nct < nodeLayer.length; nct++){
-
-                var node = nodeLayer[nct];
+            for(var pct = 0; pct < prevLayer.length; pct++){
+                var prevNode = prevLayer[pct];
                 var n = prevLayer.length;
-                for(var pct = 0; pct < n; pct++){
-                    var prevNode = prevLayer[pct];
+                var nodeWeights = []
+                for(var nct = 0; nct < nodeLayer.length; nct++){
+                    var node = nodeLayer[nct];
                     var weight = new Weight(nct, pct, layer);
-                    weight.right = node.inputCd(n, pct);
+                    weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
-                    weightLayer.push(weight);
+                    weight.value = guassianRandom();
+                    nodeWeights.push(weight);
                     newNet.addChild(weight.getSprite());
                 }
+                weightLayer.push(nodeWeights);
 
             }
             weights.push(weightLayer);
@@ -334,25 +225,34 @@ function newWeightVals(weightVals){
     // run a check to make sure the sizes are correct
     assert(weightVals.length == weights.length, "Mismatched number of layers.");
     for(var lIdx = 0; lIdx < weightVals.length; lIdx ++){
-        assert(weightVals[lIdx].length == weights[lIdx].length,
-            "Mismatched number of weights ({0} vs {1} in layer {2}."
-            .format(weightVals[lIdx].length, weights[lIdx].length, lIdx));
-    }
-    var l = 0;
-    for(layerct in weights){
-        var layer = weights[layerct];
-        // console.log(layer);
-        var j = 0;
-        for (weightct in layer){
-            weight = layer[weightct];
-            // console.log(weight);
-            weight.value = weightVals[l][j];
-            j++;
+        valLayer = weightVals[lIdx];
+        weightsLayer = weights[lIdx];
+        assert(valLayer.length == weightsLayer.length,
+            "Mismatched number of nodes ({0} vs {1} in layer {2}."
+            .format(valLayer.length, weightsLayer.length, lIdx));
+        for(var nIdx = 0; nIdx < weightsLayer.length; nIdx++){
+            nodeWeights = weightsLayer[nIdx];
+            nodeValues = valLayer[nIdx];
+            assert(nodeValues.length == nodeWeights.length, "Mismatched weight sizes (vals {0}, weights {1}) idx {2}".format(nodeValues.length, nodeWeights.length, nIdx));
+            for(var wIdx= 0; wIdx < nodeWeights.length; wIdx++){
+                nodeWeights[wIdx].value = nodeValues[wIdx];
+            }
         }
-        l++;
     }
-
-
+}
+function getWeights(){
+    var weightVals = []
+    for(var lIdx = 0; lIdx < weights.length; lIdx ++){
+        var weightLayer = [];
+        for(var nIdx = 0; nIdx < weightVals.length; nIdx++){
+            nodeWeights = weightsLayer[nIdx];
+            nodeValues = valLayer[nIdx];
+            assert(nodeValues.length == nodeWeights.length, "Mismatched weight sizes (vals {0}, weights {1}) idx {2}".format(nodeValues.length, nodeWeights.length, nIdx));
+            for(var wIdx= 0; wIdx < nodeWeights.length; wIdx++){
+                nodeWeights[wIdx].value = nodeValues[wIdx];
+            }
+        }
+    }
 }
 function animate() {
     requestAnimationFrame(animate);

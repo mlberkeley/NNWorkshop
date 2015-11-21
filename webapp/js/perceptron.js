@@ -1,20 +1,117 @@
-function assert(condition, message) {
-    if (!condition) {
-        message = message || "Assertion failed";
-        if (typeof Error !== "undefined") {
-            throw new Error(message);
+var nodes = [], // nodes organized by layer
+    weights = []; // weights organized by layer
+function Weight(inputNode, outputNode, layer){
+    /*
+    Description:
+        The weight object genreator that represents that contains clicking logic, information
+        on the nodes that it is connected to etc.
+        This weight is w^l_{jk} s.t. It connects the kth node in the l-1 layer to
+        the jth node in the lth layer. All indexes are zero-based.
+    Args:
+        inputNode: the zero-based kth node of the (l-1)th layer.
+        outputNode: the zero-based jth node of the lth layer.
+        layer: layer number l.
+    */
+    this.left = [0,0];
+    this.right = [0,0];
+    this.j = outputNode;
+    this.k = inputNode;
+    this.l = layer;
+    this.id = id;
+    id+=1;
+    this.updateDetails = function(weight){
+        return function(){
+            editWeight(weight);
+            console.log(weight.repr());
         }
-        throw message;
+    };
+    this.sprite = null;
+    // TODO make this change hte sprite color to red
+    this.setSelect = function(){
+        this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
+    };
+    //TODO make this change the sprite color to black
+    this.deselect = function(){
+        this.sprite.texture = this.getDrawing().generateTexture();
+    };
+    this.getSprite = function(){
+        if(this.sprite!=null){
+
+            return this.sprite;
+        }
+        // console.log(this)
+        var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
+        sprite.interactive = true;
+        sprite.anchor.y = 0.5;
+        sprite.x = this.left[0];
+        sprite.y = this.left[1];
+        sprite.rotation = getAngle(this.right, this.left);
+        sprite.click = this.updateDetails(this);
+        this.sprite = sprite;
+        return this.sprite;
     }
+    this.getDrawing = function(color){
+        if (color == undefined){
+            var arrow = drawArrow(this.left, this.right, 0x000000);
+        }
+        else{
+            var arrow = drawArrow(this.left, this.right, color);
+        }
+        return arrow;
+    };
+    this.repr = function(){
+        return "w^{0}_[{1},{2}]".format(this.l,this.j,this.k);
+    }
+    this.value = 0;
+}
+function Node(){
+    this.x = 0;
+    this.y = 0;
+    this.rad = nodeRad;
+    this.getDrawing = function(){
+        var nodeDrawing = new PIXI.Graphics();
+        nodeDrawing.lineStyle(1,0,1);
+        nodeDrawing.beginFill(0xFFFFFF);
+        nodeDrawing.drawCircle(this.x, this.y, this.rad);
+        return nodeDrawing;
+    };
+    this.inputCd = function(num_inputs, cur_input){
+        /*
+        Description:
+            returns the position on the circle that the input would touch
+        Args:
+            num_inputs : the number of inputs that go into a node
+            cur_input : the zero-based input index that we want the input pos for.
+        */
+        var limit = 2*Math.PI/3;
+        var totalAngle = 2/15*Math.PI*num_inputs;
+        if (totalAngle > limit){
+            totalAngle = limit;
+        }
+        var division = totalAngle/(num_inputs+1);
+        var centerOffSet = totalAngle/2-division*(cur_input+1);
+        return [this.x-this.rad*Math.cos(centerOffSet),this.y-this.rad*Math.sin(centerOffSet)];
+        // return [this.x-this.rad, this.y]
+    };
+    this.outputCd = function(){
+
+        return [this.x+this.rad, this.y];
+    };
 }
 function newNetwork(sizes){
     //sizes list of the sizes of the network
 
 }
-// function guassianRandom(){
-//     // TODO Make this actually guassian
-//     return Math.random();
-// }
+function feedForward(){
+    var inputs = getLayerSizes()
+    if (nodes != [] && weights != []){
+
+    }
+}
+function guassianRandom(){
+    // TODO Make this actually guassian
+    return Math.random();
+}
 // // function randomMatrix(m, n){
 // //     // returns a matrix of m rows and n columns that has guassian random
 // //     // elements

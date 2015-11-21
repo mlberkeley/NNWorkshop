@@ -17,7 +17,8 @@
         <div id="network-params">
             <td>Number of layers </td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
             <table id="layer-params"></table>
-            <button id='submit' onclick="createNetwork()">Create network</button>
+            <button id='createNetwork' onclick="createNetwork()">Create network</button>
+            <button id='feedForward' onclick='feedForward()'>Feed Forward</button>
         </div>
         <div id='viewport'>
             <div class='editor'>
@@ -34,8 +35,8 @@
             </div>
 
         </div>
-        <script src="js/perceptron.js"></script>
         <script src="js/util.js"></script>
+        <script src="js/perceptron.js"></script>
         <script src="js/draw.js"></script>
     </body>
 </html>
