@@ -82,7 +82,7 @@ function getBlankNet(){
 }
 function editWeight(weight){
     $('.editor').show();
-    $('#reference').html(weight.repr());
+    $('#reference').html("<p>${0}$</p>".format(weight.repr()));
 
     if (currentWeight != null)
         currentWeight.deselect();
@@ -173,10 +173,11 @@ function createNetwork(){
     Description:
         Regenerates the new network based on the values selected in the layers
     */
+    $('#outputBox').hide();
     var newNet = getBlankNet();
     var numLayers = layerSelector.val();
     var layerSizes = getLayerSizes();
-    nodes = []; weights = [];
+    nodes = []; weights = [], weightMats = [];
 
     var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     for(var layer = 0; layer < numLayers; layer++){
@@ -198,32 +199,38 @@ function createNetwork(){
         if (layer != 0){ // We don't generate weights for the first layer
             prevLayer = nodes[nodes.length-1];
             var weightLayer = []
+            var layerVals = [];
             for(var pct = 0; pct < prevLayer.length; pct++){
                 var prevNode = prevLayer[pct];
                 var n = prevLayer.length;
-                var nodeWeights = []
+                var nodeWeights = [];
+                var weightVals = [];
                 for(var nct = 0; nct < nodeLayer.length; nct++){
                     var node = nodeLayer[nct];
                     var weight = new Weight(nct, pct, layer);
                     weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
                     weight.value = guassianRandom();
+                    weightVals.push(weight.value);
                     nodeWeights.push(weight);
                     newNet.addChild(weight.getSprite());
                 }
                 weightLayer.push(nodeWeights);
-
+                layerVals.push(weightVals);
             }
             weights.push(weightLayer);
+            weightMats.push(math.matrix(layerVals));
         }
         nodes.push(nodeLayer);
     }
     addDrawnNet(newNet);
+    setupInputFields();
 }
 
 function newWeightVals(weightVals){
     // run a check to make sure the sizes are correct
     assert(weightVals.length == weights.length, "Mismatched number of layers.");
+    var newMats = [];
     for(var lIdx = 0; lIdx < weightVals.length; lIdx ++){
         valLayer = weightVals[lIdx];
         weightsLayer = weights[lIdx];
@@ -238,21 +245,51 @@ function newWeightVals(weightVals){
                 nodeWeights[wIdx].value = nodeValues[wIdx];
             }
         }
+        newMats.push(math.matrix(valLayer));
+
     }
+    weightMats = newMats;
 }
 function getWeights(){
     var weightVals = []
     for(var lIdx = 0; lIdx < weights.length; lIdx ++){
+        var layer = weights[layer];
         var weightLayer = [];
-        for(var nIdx = 0; nIdx < weightVals.length; nIdx++){
-            nodeWeights = weightsLayer[nIdx];
-            nodeValues = valLayer[nIdx];
-            assert(nodeValues.length == nodeWeights.length, "Mismatched weight sizes (vals {0}, weights {1}) idx {2}".format(nodeValues.length, nodeWeights.length, nIdx));
+        for(var nIdx = 0; nIdx < layer.length; nIdx++){
+            var nodeWeights =layer[nIdx];
+            var weightVals = [];
             for(var wIdx= 0; wIdx < nodeWeights.length; wIdx++){
-                nodeWeights[wIdx].value = nodeValues[wIdx];
+                weightVals.push(nodeWeights[wIdx]);
             }
+            weightLayer.push(weightVals);
         }
+        weightVals.push(weightLayer);
     }
+    return weightVals;
+}
+function setupInputFields(){
+    var inputs = getNetworkSizes()[0];
+    var inputDiv = $('#inputs');
+    inputDiv.empty();
+    for(var i = 0; i < inputs; i++){
+        var row = $('<tr></tr>'.format(i));
+        row.html('Input {0}<input id = "input{0}"></input>'.format(i));
+        inputDiv.append(row);
+
+    }
+}
+function getNetworkSizes(){
+    return getLayerSizes();
+}
+function getInputs(){
+    var inputs = getNetworkSizes()[0];
+    var vals = []
+    for(var i = 0; i < inputs; i++){
+        var newVal =parseInt($('#input'+i).val());
+        assert(newVal!= NaN, "Improper type of input at input{0}".format(i));
+        vals.push(newVal);
+    }
+    return vals;
 }
 function animate() {
     requestAnimationFrame(animate);

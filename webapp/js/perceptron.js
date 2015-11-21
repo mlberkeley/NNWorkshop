@@ -1,5 +1,6 @@
 var nodes = [], // nodes organized by layer
     weights = []; // weights organized by layer
+var weightMats = [];
 function Weight(inputNode, outputNode, layer){
     /*
     Description:
@@ -102,11 +103,28 @@ function newNetwork(sizes){
     //sizes list of the sizes of the network
 
 }
-function feedForward(){
-    var inputs = getLayerSizes()
-    if (nodes != [] && weights != []){
-
+function feedForward(inputs){
+    var num_inputs = getLayerSizes()[0];
+    assert(num_inputs == inputs.length,
+        'Improper input length. Got {0} expected {1}', inputs.length, num_inputs);
+    if (nodes == [] || weights == []){
+        throw new Error('No Network to run');
     }
+    var output = inputs
+    for(layer in weightMats){
+        var matrix = weightMats[layer];
+        output = math.multiply(matrix, output);
+    }
+
+    $('#outputLines').empty();
+    for(elm in output._data){
+        var line= $('<p></p>')
+        line.html(output._data[elm]);
+        $('#outputLines').append(line);
+    }$('#outputBox').show();
+    return output
+
+
 }
 function guassianRandom(){
     // TODO Make this actually guassian

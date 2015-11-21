@@ -10,15 +10,36 @@
         <meta name="author" content="">
         <script src="js/pixi.min.js"></script>
         <script src="js/jquery.min.js"></script>
+
         <link rel='stylesheet' type='text/css' href='css/styles.css'>
+
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config;executed=true">
+          MathJax.Hub.Config({
+            tex2jax: {
+              inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+              processEscapes: true
+            }
+          });
+        </script>
+
+
+
         <title>Perceptron Demo</title>
     </head>
     <body>
         <div id="network-params">
-            <td>Number of layers </td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
+            <td>Number of layers</td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
             <table id="layer-params"></table>
             <button id='createNetwork' onclick="createNetwork()">Create network</button>
-            <button id='feedForward' onclick='feedForward()'>Feed Forward</button>
+            <div id="inputs"></div>
+            <button id='feedForward' onclick='feedForward(getInputs())'>Feed Forward</button>
+
+            <div id ="outputBox">
+                <h3>Output</h3>
+                <div id="outputLines">
+                </div>
+            </div>
         </div>
         <div id='viewport'>
             <div class='editor'>
@@ -35,6 +56,7 @@
             </div>
 
         </div>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.1/math.min.js"></script>
         <script src="js/util.js"></script>
         <script src="js/perceptron.js"></script>
         <script src="js/draw.js"></script>
