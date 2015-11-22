@@ -4,10 +4,13 @@ var maxNodes = 5;
 var nodeRad = 30;
 var separation = 40;
 
-var selection = null;
-var layerSelector = $('#num-layers');
+var selection = null; // the selected network element
+
 $('.editor').hide();
-for(i = 1; i <= maxLayers; i++){
+
+// setup the layer size selection box
+var layerSelector = $('#num-layers');
+for(i = 2; i <= maxLayers; i++){
     var option = document.createElement('option');
     option.value = i;
     option.innerHTML = i;
@@ -20,6 +23,7 @@ newLayerCount(layerSelector.val());
 
 
 
+// set up the FOV
 var displayWidth = 800;
 var displayHeight = 600;
 var renderer = PIXI.autoDetectRenderer(displayWidth,displayHeight,{backgroundColor : 0xdfdfdf, antialias : true});
@@ -34,7 +38,62 @@ animate();
 // draw the network
 createNetwork();
 
+function setupLayerSelector(){
 
+    var weightSelector = $('#layer-select');
+    weightSelector.empty();
+    //setup the weight editor selection box
+    for(i = 1; i < nodes.length; i++){
+        var option = document.createElement('option');
+        option.value = i;
+        option.innerHTML = "Layer "+i;
+        weightSelector.append(option);
+    }
+    weightSelector.val(1);
+    updateLayer(1);
+}
+
+function updateLayer(index){
+    if (index == undefined)
+        index=  1;
+    else
+        index = parseInt(index);
+    var nodeSelector = $('#node-select');
+    nodeSelector.empty();
+    var nodeLayer = nodes[index];
+    for(i = 0; i < nodeLayer.length; i++){
+        var option = $('<option></option>');
+        option.val(i);
+        option.html("Node "+i);
+        nodeSelector.append(option);
+    }
+    updateWeightTable(0);
+}
+function valueChangerRow(object, idx){
+    var option = $('<tr></tr>');
+    var name = $('<td></td>');
+    name.html(object.repr());
+    option.append(name);
+    var input = $('<input class="form-control" id="obj{0}" onchange="selectedObjects[{0}].setValue(this.value)">'.format(idx))
+    option.append(input);
+    return option;
+}
+var selectedObjects = null;
+function updateWeightTable(index){
+    if(index == undefined)
+        return;
+
+    var weightSelector = $('#layer-select');
+    var layer = parseInt(weightSelector.val());
+    var weightTable = $('#weights-table');
+    weightTable.empty();
+    selectedObjects = [nodes[layer][index]].concat(weights[layer-1][index]);
+    for(var i = 0; i < selectedObjects.length; i++){
+        weightTable.append(valueChangerRow(selectedObjects[i], i));
+    }
+    console.log(weightTable.html());
+
+}
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////           Functions for drawing       ////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,11 +101,12 @@ function newLayerCount(numLayers){
     // creates the selection boxes
     var layerParams = $('#layer-params');
     layerParams.empty();
+
     // make this into a table
     for (i = 1; i <= numLayers; i++){
         var tableRow = $('<tr></tr>');
         tableRow.append($('<td> Layer '+ i+"</td>"))
-        var nodeSelector = $('<select id=layer'+i+'></select>');
+        var nodeSelector = $('<select class="form-control" id=layer'+i+'></select>');
         setupNodes(nodeSelector);
         tableRow.append(nodeSelector);
         layerParams.append(tableRow)
@@ -192,17 +252,20 @@ function createNetwork(){
         var nodeLayer = [], biasLayer = [];
         var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));
         for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
+            var bias = guassianRandom();
             var curNode = new Node(layer, nodeCt);
+
             curNode.x = x;
             curNode.y = y;
             newNet.addChild(curNode.getSprite());
-            curNode.setValue(guassianRandom(), true);
-            biasLayer.push(curNode.bias());
-            nodeLayer.push(curNode);
-            y += 2*nodeRad + separation; // update the y value for the next circle
 
+            curNode.setValue(bias, true);
+            biasLayer.push(bias);
+            nodeLayer.push(curNode);
+
+            y += 2*nodeRad + separation; // update the y value for the next circle
         }
-        x += 2*nodeRad + 2*separation;
+        x += 2*nodeRad + 2*separation; // update the x value for the next layer
         // generate the weights
 
         if (layer != 0){ // We don't generate weights for the first layer
@@ -216,7 +279,7 @@ function createNetwork(){
                 var weightVals = [];
                 for(var nct = 0; nct < nodeLayer.length; nct++){
                     var node = nodeLayer[nct];
-                    var weight = new Weight(nct, pct, layer);
+                    var weight = new Weight(prevNode, node, layer);
                     weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
                     weight.setValue(guassianRandom(), true);
@@ -235,6 +298,7 @@ function createNetwork(){
     }
     addDrawnNet(newNet);
     setupInputFields();
+    setupLayerSelector();
 }
 
 function newWeightVals(weightVals){
@@ -283,13 +347,17 @@ function setupInputFields(){
     inputDiv.empty();
     for(var i = 0; i < inputs; i++){
         var row = $('<tr></tr>'.format(i));
-        row.html('Input {0}<input id = "input{0}"></input>'.format(i));
+        row.html('<td>Input {0}</td><td><input class="form-control" id = "input{0}"></td>'.format(i));
         inputDiv.append(row);
 
     }
 }
 function getNetworkSizes(){
-    return getLayerSizes();
+    var sizes = [];
+    for(var i = 0;  i < nodes.length; i++){
+        sizes.push(nodes[i].length)
+    }
+    return sizes;
 }
 function getInputs(){
     var inputs = getNetworkSizes()[0];

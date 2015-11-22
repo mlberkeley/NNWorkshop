@@ -13,10 +13,12 @@ function Weight(inputNode, outputNode, layer){
         outputNode: the zero-based jth node of the lth layer.
         layer: layer number l.
     */
+    this.input = inputNode;
+    this.output = outputNode;
     this.left = [0,0];
     this.right = [0,0];
-    this.j = outputNode;
-    this.k = inputNode;
+    this.j = outputNode.index;
+    this.k = inputNode.index;
     this.l = layer;
     // this.id = id;
     this.type = 'Weight';
@@ -42,10 +44,14 @@ function Weight(inputNode, outputNode, layer){
     }
     this.select = function(){
         this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
+        this.input.select();
+        this.output.select();
     };
 
     this.deselect = function(){
         this.sprite.texture = this.getDrawing().generateTexture();
+        this.input.deselect();
+        this.output.deselect();
     };
     this.getSprite = function(){
         if(this.sprite!=null){
@@ -97,7 +103,7 @@ function Node(layer, index){
         if(this.layer == 0)
             return 0;
         else
-            return this._bias;
+            return biases[this.layer][this.index];
     };
     this.value = function(){
         return this.bias();
@@ -105,7 +111,7 @@ function Node(layer, index){
     this.setValue = function(newBias, init){
         this._bias = newBias;
         if (init == undefined || !init)
-            biases[this.layer][this.index] = this._bias;
+            biases[this.layer][this.index] = newBias;
     }
     this.getDrawing = function(color){
         if(color == undefined)
@@ -159,7 +165,7 @@ function Node(layer, index){
         return [this.x+this.rad, this.y];
     };
     this.repr = function(){
-        return "b={0}".format(this.bias());
+        return "bias^{0}_{1}".format(this.layer, this.index);
     };
     this.select = function(){
         this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
@@ -172,7 +178,7 @@ function feedForward(inputs, perceptron){
     if(perceptron == undefined)
         perceptron = true; // TODO this should be false and should be dependent on a checkbox
 
-    var num_inputs = getLayerSizes()[0];
+    var num_inputs = getNetworkSizes()[0];
     assert(num_inputs == inputs.length,
         'Improper input length. Got {0} expected {1}', inputs.length, num_inputs);
     if (nodes == [] || weights == []){

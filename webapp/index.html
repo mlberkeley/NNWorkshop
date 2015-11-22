@@ -12,7 +12,7 @@
         <script src="js/jquery.min.js"></script>
 
         <link rel='stylesheet' type='text/css' href='css/styles.css'>
-
+        <link rel='stylesheet' type='text/css' href='css/bootstrap.min.css'>
         <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
         <script type="text/x-mathjax-config;executed=true">
           MathJax.Hub.Config({
@@ -22,40 +22,56 @@
             }
           });
         </script>
-
-
-
         <title>Perceptron Demo</title>
     </head>
     <body>
-        <div id="network-params">
-            <td></td><select id="num-layers" onchange='newLayerCount(this.value)'></select>
-            <table id="layer-params"></table>
-            <button id='createNetwork' onclick="createNetwork()">Create network</button>
-            <div id="inputs"></div>
-            <button id='feedForward' onclick='feedForward(getInputs())'>Feed Forward</button>
+        <div class="container">
+            <div class="row">
+                <div class ="col-md-5 col-lg-6" id="network-params">
+                    <table class="table">
+                        <tr>
+                            <td><h4>Number of Layers</h4></td>
+                            <td><select class = "form-control" id="num-layers" onchange='newLayerCount(this.value)'></select></td>
+                        </tr>
+                    </table>
+                    <table class="table" id="layer-params"></table>
+                    <button class="btn btn-default" id='createNetwork' onclick="createNetwork()">Create network</button>
+                    <table class = "table" id="inputs"></table>
+                    <button class="btn btn-default" id='feedForward' onclick='feedForward(getInputs())'>Feed Forward</button>
+                </div>
 
-            <div id ="outputBox">
+                <div class="col-md-5 col-lg-6">
+                    <select class="form-control" id="layer-select" onchange='updateLayer(this.value)'></select>
+                    <select class="form-control" id="node-select" onchange="updateWeightTable(this.value)"></select>
+                    <table class ="table" id="weights-table"></table>
+                    <!-- <table class = "table" id="bias-table"></table> -->
+                </div>
+
+            </div>
+            <div class = "row" id ="outputBox">
                 <h3>Output</h3>
                 <div id="outputLines">
                 </div>
             </div>
-        </div>
-        <div id='viewport'>
-            <div class='editor'>
-                <h3>Editing:</h3>
-                <div id ='reference'>w^{0}_[{1},{2}]</div>
-                <div id='input-field'>
-                    <input id='field-val' type="text">
-                    <div class='button-group'>
-                        <button value="Create" onclick="updateWeight()">Update</button>
-                        <button value="Cancel" onclick="closeEditor()">Cancel</button>
+            <div class="row">
+                <div id='viewport'>
+                    <div class='editor'>
+                        <h3>Editing:</h3>
+                        <div id ='reference'>w^{0}_[{1},{2}]</div>
+                        <div id='input-field'>
+                            <input id='field-val' type="text">
+                            <div class='button-group'>
+                                <button value="Create" onclick="updateWeight()">Update</button>
+                                <button value="Cancel" onclick="closeEditor()">Cancel</button>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
-
             </div>
-
         </div>
+
         <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.1/math.min.js"></script>
         <script src="js/util.js"></script>
         <script src="js/perceptron.js"></script>
