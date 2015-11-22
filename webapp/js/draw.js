@@ -105,7 +105,7 @@ function updateWeight(){
     newVal = parseInt(newVal)
     if (newVal != NaN){
         if (selection.type === 'Weight')
-            selection.value = newVal;
+            selection.setValue(newVal);
         else
             selection.setValue(newVal);
 

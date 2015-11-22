@@ -32,7 +32,7 @@ function Weight(inputNode, outputNode, layer){
     this.setValue = function(newWeight, init){
         this._weight = newWeight;
         if (init == undefined || !init)
-            weightMats[l-1].data[j][k] = newWeight;
+            weightMats[this.l-1]._data[this.j][this.k] = newWeight;
     };
     this.value = function(){
         return this.weight();
@@ -168,9 +168,11 @@ function Node(layer, index){
         this.sprite.texture = this.getDrawing().generateTexture();
     };
 }
-function feedForward(inputs){
+function feedForward(inputs, perceptron){
+    if(perceptron == undefined)
+        perceptron = true; // TODO this should be false and should be dependent on a checkbox
+
     var num_inputs = getLayerSizes()[0];
-    weightMats = getWeights();
     assert(num_inputs == inputs.length,
         'Improper input length. Got {0} expected {1}', inputs.length, num_inputs);
     if (nodes == [] || weights == []){
@@ -180,6 +182,17 @@ function feedForward(inputs){
     for(layer in weightMats){
         var matrix = weightMats[layer];
         output = math.multiply(math.transpose(matrix), output);
+        output = math.add(output, biases[layer]);
+        if(perceptron){
+            output = output.map(function(val, idx, matrix){
+                if (val > 0){
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            });
+        }
     }
 
     $('#outputLines').empty();
