@@ -1,12 +1,11 @@
 // parameter handler
-
 var maxLayers = 5;
 var maxNodes = 5;
 var nodeRad = 30;
 var separation = 40;
 
 
-var currentWeight = null;
+var selection = null;
 var layerSelector = $('#num-layers');
 $('.editor').hide();
 for(i = 1; i <= maxLayers; i++){
@@ -78,25 +77,37 @@ function getBlankNet(){
         Returns an empty container. Abstraction to make future changes easier.
     */
     return new PIXI.Container();
-
 }
+// TODO literally unify references to these
 function editWeight(weight){
     $('.editor').show();
     $('#reference').html("<p>${0}$</p>".format(weight.repr()));
 
-    if (currentWeight != null)
-        currentWeight.deselect();
+    if (selection != null)
+        selection.deselect();
 
-    currentWeight = weight;
-    weight.setSelect();
+    selection = weight;
+    weight.select();
 
-    $('#field-val').val(weight.value);
+    $('#field-val').val(weight.value());
+}
+function editBias(node){
+    $('.editor').show();
+    $('#reference').html("<p>${0}$</p>".format(node.repr()));
+    if (selection != null)
+        selection.deselect();
+    selection = node;
+    selection.select();
+    $('#field-val').val(node.value());
 }
 function updateWeight(){
     newVal = $('#field-val').val();
     newVal = parseInt(newVal)
     if (newVal != NaN){
-        currentWeight.value = newVal;
+        if (selection.type === 'Weight')
+            selection.value = newVal;
+        else
+            selection.setValue(newVal);
 
     }
     else{
@@ -106,8 +117,8 @@ function updateWeight(){
 }
 function closeEditor(){
     $('.editor').hide();
-    currentWeight.deselect();
-    currentWeight = null;
+    selection.deselect();
+    selection = null;
 }
 function addDrawnNet(newNet){
     /*
@@ -118,6 +129,11 @@ function addDrawnNet(newNet){
     for (var i = 0; i < board.children.length; i++) {
     	board.removeChild(board.children[i]);
     }
+    var g = new PIXI.Graphics();
+    g.moveTo(0,300);
+    g.lineStyle(1,0,1);
+    g.lineTo(800,300);
+    board.addChild(g);
     board.addChild(newNet);
 }
 function getLayerSizes(){
@@ -177,18 +193,21 @@ function createNetwork(){
     var newNet = getBlankNet();
     var numLayers = layerSelector.val();
     var layerSizes = getLayerSizes();
-    nodes = []; weights = [], weightMats = [];
+    nodes = []; weights = [];
+    weightMats = [], biases = [];
 
     var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     for(var layer = 0; layer < numLayers; layer++){
         var layerSize = layerSizes[layer];
-        var nodeLayer = [];
+        var nodeLayer = [], biasLayer = [];
         var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));
         for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
-            var curNode = new Node();
+            var curNode = new Node(layer, nodeCt);
             curNode.x = x;
             curNode.y = y;
-            newNet.addChild(curNode.getDrawing());
+            newNet.addChild(curNode.getSprite());
+            curNode.setValue(guassianRandom(), true);
+            biasLayer.push(curNode.bias());
             nodeLayer.push(curNode);
             y += 2*nodeRad + separation; // update the y value for the next circle
 
@@ -210,8 +229,8 @@ function createNetwork(){
                     var weight = new Weight(nct, pct, layer);
                     weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
-                    weight.value = guassianRandom();
-                    weightVals.push(weight.value);
+                    weight.setValue(guassianRandom(), true);
+                    weightVals.push(weight.value());
                     nodeWeights.push(weight);
                     newNet.addChild(weight.getSprite());
                 }
@@ -222,6 +241,7 @@ function createNetwork(){
             weightMats.push(math.matrix(layerVals));
         }
         nodes.push(nodeLayer);
+        biases.push(biasLayer);
     }
     addDrawnNet(newNet);
     setupInputFields();
@@ -242,7 +262,7 @@ function newWeightVals(weightVals){
             nodeValues = valLayer[nIdx];
             assert(nodeValues.length == nodeWeights.length, "Mismatched weight sizes (vals {0}, weights {1}) idx {2}".format(nodeValues.length, nodeWeights.length, nIdx));
             for(var wIdx= 0; wIdx < nodeWeights.length; wIdx++){
-                nodeWeights[wIdx].value = nodeValues[wIdx];
+                nodeWeights[wIdx].setValue(nodeValues[wIdx]);
             }
         }
         newMats.push(math.matrix(valLayer));
@@ -253,7 +273,7 @@ function newWeightVals(weightVals){
 function getWeights(){
     var weightVals = []
     for(var lIdx = 0; lIdx < weights.length; lIdx ++){
-        var layer = weights[layer];
+        var layer = weights[lIdx];
         var weightLayer = [];
         for(var nIdx = 0; nIdx < layer.length; nIdx++){
             var nodeWeights =layer[nIdx];
@@ -263,7 +283,7 @@ function getWeights(){
             }
             weightLayer.push(weightVals);
         }
-        weightVals.push(weightLayer);
+        weightVals.push(math.matrix(weightLayer));
     }
     return weightVals;
 }
@@ -291,13 +311,14 @@ function getInputs(){
     }
     return vals;
 }
+// var g = new Graphics();
+// g.moveTo(0,300);
+// g.lineStyle(1,0,1);
+// g.lineTo(800,300);
+// stage.addChild(g);
 function animate() {
     requestAnimationFrame(animate);
-    // for(layer in weights){
-    //     for(weight in layer){
-    //         weight
-    //     }
-    // }
+
     // render the container
     renderer.render(stage);
 }

@@ -1,6 +1,6 @@
 var nodes = [], // nodes organized by layer
     weights = []; // weights organized by layer
-var weightMats = [];
+var weightMats = [], biases = []; // the barebones structure of the network, separated for faster computation.
 function Weight(inputNode, outputNode, layer){
     /*
     Description:
@@ -18,20 +18,32 @@ function Weight(inputNode, outputNode, layer){
     this.j = outputNode;
     this.k = inputNode;
     this.l = layer;
-    this.id = id;
-    id+=1;
+    // this.id = id;
+    this.type = 'Weight';
+    this.sprite = null;
+    // id+=1;
+    this._weight = 0;
     this.updateDetails = function(weight){
         return function(){
             editWeight(weight);
-            console.log(weight.repr());
+            // console.log(weight.repr());
         }
     };
-    this.sprite = null;
-    // TODO make this change hte sprite color to red
-    this.setSelect = function(){
+    this.setValue = function(newWeight, init){
+        this._weight = newWeight;
+        if (init == undefined || !init)
+            weightMats[l-1].data[j][k] = newWeight;
+    };
+    this.value = function(){
+        return this.weight();
+    };
+    this.weight = function(){
+        return this._weight;
+    }
+    this.select = function(){
         this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
     };
-    //TODO make this change the sprite color to black
+
     this.deselect = function(){
         this.sprite.texture = this.getDrawing().generateTexture();
     };
@@ -62,20 +74,68 @@ function Weight(inputNode, outputNode, layer){
     };
     this.repr = function(){
         return "w^{0}_[{1},{2}]".format(this.l,this.j,this.k);
-    }
-    this.value = 0;
+    };
 }
-function Node(){
+function Node(layer, index){
+    /*
+    Description:
+        The node abstraction that contains the location, the indexing of the
+        node, drawing method, and coordinate handlers.
+    Args:
+        layer (integer) : the zero-based index of the layer within the network
+        index (integer) : the zero-based index within the layer
+    */
+    this.type = 'Node';
+    this.layer = layer;     // the zero-based layer that this node belongs to
+    this.index = index;     // the zero-based index that this node belongs to;
     this.x = 0;
     this.y = 0;
     this.rad = nodeRad;
-    this.getDrawing = function(){
+    this._bias = 0;
+    this.sprite = null;
+    this.bias = function(){
+        if(this.layer == 0)
+            return 0;
+        else
+            return this._bias;
+    };
+    this.value = function(){
+        return this.bias();
+    }
+    this.setValue = function(newBias, init){
+        this._bias = newBias;
+        if (init == undefined || !init)
+            biases[this.layer][this.index] = this._bias;
+    }
+    this.getDrawing = function(color){
+        if(color == undefined)
+            color = 0;
         var nodeDrawing = new PIXI.Graphics();
-        nodeDrawing.lineStyle(1,0,1);
+        nodeDrawing.lineStyle(1,color,1);
         nodeDrawing.beginFill(0xFFFFFF);
         nodeDrawing.drawCircle(this.x, this.y, this.rad);
         return nodeDrawing;
     };
+    this.updateDetails =function(node){
+        return function(){
+            editBias(node);
+        }
+    }
+    this.getSprite = function(){
+        if(this.sprite!=null){  // return the existing sprite
+            return this.sprite;
+        }
+        // else make a new sprite
+        var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
+        sprite.interactive = true;
+        sprite.anchor.x = 0.5;
+        sprite.anchor.y = 0.5;
+        sprite.x = this.x;
+        sprite.y = this.y;
+        sprite.click = this.updateDetails(this);
+        this.sprite = sprite;
+        return sprite;
+    }
     this.inputCd = function(num_inputs, cur_input){
         /*
         Description:
@@ -98,13 +158,19 @@ function Node(){
 
         return [this.x+this.rad, this.y];
     };
-}
-function newNetwork(sizes){
-    //sizes list of the sizes of the network
-
+    this.repr = function(){
+        return "b={0}".format(this.bias());
+    };
+    this.select = function(){
+        this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
+    };
+    this.deselect = function(){
+        this.sprite.texture = this.getDrawing().generateTexture();
+    };
 }
 function feedForward(inputs){
     var num_inputs = getLayerSizes()[0];
+    weightMats = getWeights();
     assert(num_inputs == inputs.length,
         'Improper input length. Got {0} expected {1}', inputs.length, num_inputs);
     if (nodes == [] || weights == []){
@@ -113,7 +179,7 @@ function feedForward(inputs){
     var output = inputs
     for(layer in weightMats){
         var matrix = weightMats[layer];
-        output = math.multiply(matrix, output);
+        output = math.multiply(math.transpose(matrix), output);
     }
 
     $('#outputLines').empty();
@@ -130,58 +196,3 @@ function guassianRandom(){
     // TODO Make this actually guassian
     return Math.random();
 }
-// // function randomMatrix(m, n){
-// //     // returns a matrix of m rows and n columns that has guassian random
-// //     // elements
-// //     if (n == 1){
-// //         col = []
-// //         for (j = 0; j < n; j++){
-// //             col.push(guassianRandom());
-// //         }
-// //         return col;
-// //     }
-// //     matrix = []
-// //     for (i = 0; i < m; i++){
-// //         row = []
-// //         for (j = 0; j < n; j++){
-// //             row.push(guassianRandom());
-// //         }
-// //         matrix.push(row);
-// //     }
-// //     return matrix;
-// // }
-// // function newNetwork(sizes){
-// //     var network =
-// //     {
-// //         layerSize: sizes,
-// //         weights : [],
-// //         biases : [],
-// //         feedForward : function(val){
-// //             // confirm that length of input fits the length desired
-// //             assert(val.length == this.weights[0].length, 'Length input mismatch');
-// //             this.weights.forEach(function(weight_matrix){
-// //                 temp = Array.apply(null, Array(weight_matrix.length)).map(function () { return 0; });
-// //                 for(i = 0; i < weight_matrix.length; i++)// column selector
-// //                 {
-// //                     row = weight_matrix[i]
-// //                     for(j = 0; j < row.length; j++){
-// //                         temp[i] += row[j] * val[j]
-// //                     }
-// //                     temp[i] += this.biases[i];
-// //                 }
-// //                 val = temp;
-// //             });
-// //             return val;
-// //         }
-// //     };
-// //     network.weights = [randomMatrix(2,2)];
-// //     network.biases = randomMatrix(2,1);
-// //     // weights = [];
-// //     // biases = [];
-// //     // for(i = 1; i < sizes.length; i++){
-// //     //     // TODO query the server for this, otherwise it will break
-// //     //     weights.push(randomMatrix(sizes[i-1], sizes[i]));
-// //     //     biases.push(randomMatrix(1,sizes[i]));
-// //     // }
-// //     return network
-// // }
