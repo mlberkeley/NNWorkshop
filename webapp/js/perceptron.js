@@ -179,10 +179,13 @@ function feedForward(inputs, perceptron){
         throw new Error('No Network to run');
     }
     var output = inputs
-    for(layer in weightMats){
+    for(var layer=0; layer < weightMats.length; layer++){
         var matrix = weightMats[layer];
+        var biasLayer =biases[layer+1];
         output = math.multiply(math.transpose(matrix), output);
-        output = math.add(output, biases[layer]);
+
+        output = math.add(output, biasLayer);
+
         if(perceptron){
             output = output.map(function(val, idx, matrix){
                 if (val > 0){
@@ -207,5 +210,5 @@ function feedForward(inputs, perceptron){
 }
 function guassianRandom(){
     // TODO Make this actually guassian
-    return Math.random();
+    return (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3)/3;
 }

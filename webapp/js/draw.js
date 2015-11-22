@@ -4,7 +4,6 @@ var maxNodes = 5;
 var nodeRad = 30;
 var separation = 40;
 
-
 var selection = null;
 var layerSelector = $('#num-layers');
 $('.editor').hide();
@@ -102,16 +101,12 @@ function editBias(node){
 }
 function updateWeight(){
     newVal = $('#field-val').val();
-    newVal = parseInt(newVal)
-    if (newVal != NaN){
-        if (selection.type === 'Weight')
-            selection.setValue(newVal);
-        else
-            selection.setValue(newVal);
-
+    newVal = parseFloat(newVal);
+    if (!isNaN(newVal)){
+        selection.setValue(newVal);
     }
     else{
-        console.log('Could not update value to none number')
+        console.log('Could not update value to NaN number')
     }
     closeEditor();
 }
@@ -129,11 +124,6 @@ function addDrawnNet(newNet){
     for (var i = 0; i < board.children.length; i++) {
     	board.removeChild(board.children[i]);
     }
-    var g = new PIXI.Graphics();
-    g.moveTo(0,300);
-    g.lineStyle(1,0,1);
-    g.lineTo(800,300);
-    board.addChild(g);
     board.addChild(newNet);
 }
 function getLayerSizes(){
