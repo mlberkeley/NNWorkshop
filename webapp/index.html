@@ -27,12 +27,22 @@
     <body>
         <div class="container">
             <div class="row">
+
                 <div class ="col-md-5 col-lg-6" id="network-params">
+                    <h3> Edit Layer Parameters</h3>
                     <table class="table">
                         <tr>
                             <td><h4>Number of Layers</h4></td>
                             <td><select class = "form-control" id="num-layers" onchange='newLayerCount(this.value)'></select></td>
                         </tr>
+                        <tr>
+                            <td><h4>Network Type</h4></td>
+                            <td>
+                                <select class="form-control" id="network-type">
+                                      <option value="0">Perceptron</option>
+                                      <option value="1">Sigmoid</option>
+                                  </select>
+                            </td>
                     </table>
                     <table class="table" id="layer-params"></table>
                     <button class="btn btn-default" id='createNetwork' onclick="createNetwork()">Create network</button>
@@ -45,6 +55,8 @@
                     <select class="form-control" id="layer-select" onchange='updateLayer(this.value)'></select>
                     <select class="form-control" id="node-select" onchange="updateWeightTable(this.value)"></select>
                     <table class ="table" id="weights-table"></table>
+                    <h3>Premade Networks</h3>
+                    <button class="btn btn-default" id="and-gate-btn" onclick="andGateNetwork()">AND Gate</button>
                     <!-- <table class = "table" id="bias-table"></table> -->
                 </div>
 
@@ -62,8 +74,8 @@
                         <div id='input-field'>
                             <input id='field-val' type="text">
                             <div class='button-group'>
-                                <button value="Create" onclick="updateWeight()">Update</button>
-                                <button value="Cancel" onclick="closeEditor()">Cancel</button>
+                                <button id="updateValBtn" onclick="updateValue()">Update</button>
+                                <button id="cancelBtn" onclick="closeEditor()">Cancel</button>
                             </div>
                         </div>
 

@@ -136,29 +136,33 @@ function getBlankNet(){
     */
     return new PIXI.Container();
 }
-// TODO literally unify references to these
-function editWeight(weight){
-    $('.editor').show();
-    $('#reference').html("<p>${0}$</p>".format(weight.repr()));
-
-    if (selection != null)
-        selection.deselect();
-
-    selection = weight;
-    weight.select();
-
-    $('#field-val').val(weight.value());
+function getInputDom(){
+    var inputs = [];
+    for(var ipCt = 0; ipCt < getNetworkSizes()[0]; ipCt++){
+        inputs.push($('#input'+ipCt));
+    }
+    return inputs;
 }
-function editBias(node){
+function editObject(object){
     $('.editor').show();
-    $('#reference').html("<p>${0}$</p>".format(node.repr()));
     if (selection != null)
         selection.deselect();
-    selection = node;
+
+
+    $('#reference').html("<p>${0}$</p>".format(object.repr()));
+    selection = object;
     selection.select();
-    $('#field-val').val(node.value());
+    var fieldVal = $('#field-val');
+    fieldVal.val(object.value());
+    fieldVal.focus();
+    fieldVal.select();
+    fieldVal.keyup(function(event){
+        if(event.keyCode == 13){
+            $("#updateValBtn").click();
+        }
+    });
 }
-function updateWeight(){
+function updateValue(){
     newVal = $('#field-val').val();
     newVal = parseFloat(newVal);
     if (!isNaN(newVal)){
@@ -173,6 +177,20 @@ function closeEditor(){
     $('.editor').hide();
     selection.deselect();
     selection = null;
+}
+function andGateNetwork(){
+    var parameters = ['[{"mathjs":"DenseMatrix","data":[["1","1"]],"size":[1,2]}]', '[["-1"]]'];
+    generateNetwork([2,1], parameters[0], parameters[1])
+}
+function isPerceptron(){
+    /*
+    Description:
+        Returns whether the network is a perceptron or not.
+    */
+    if (parseInt($('#network-type').val()) == 0)
+        return true;
+    else
+        return false;
 }
 function addDrawnNet(newNet){
     /*
@@ -233,35 +251,118 @@ function getAngle (opp, adj){
 }
 var id = 0;
 
-function createNetwork(){
+function createNetwork()
+{
+    $('#outputBox').hide();
+    var layerSizes = getLayerSizes();
+    generateNetwork(layerSizes);
+}
+function paramsAligned(layerSizes, newWeights, newBiases){
+    /*
+    Description: Checks whether the layerSizes match up with the sizes within newWeights and
+    newBiases. Errors if the params are not aligned.
+
+    Returns:
+        Nothing if there is an error
+        true if there is no error
+
+    */
+    if(newBiases.length != newWeights.length){
+        console.log("Layers are not aligned in the input parameters.");
+        return false;
+    }
+    if(newBiases.length != layerSizes.length-1){
+        console.log("Expected {0} bias layers but got {1}".format(layerSizes.length-1, newBiases.length));
+        return false;
+    }
+    for(var layerCt = 1; layerCt < layerSizes.length; layerCt++){
+        var curBiases = newBiases[layerCt-1];
+        var curWeights = newWeights[layerCt-1];
+        var weightsLen = curWeights.length;
+
+        if (weightsLen == undefined){
+            if(curWeights._data != undefined){
+            curWeights = curWeights._data;
+            }
+            else{
+                curWeights = curWeights.data;
+            }
+            weightsLen = curWeights.length;
+        }
+
+        if(curBiases.length != weightsLen){
+            console.log("Bias and weight layers are not aligned{0} vs {1}".format(curBiases.length, weightsLen));
+            return false;
+        }
+        if(curBiases.length != layerSizes[layerCt]){
+            console.log("Expected bias sizes {0}. Got {1}".format(layerSizes[layerCt], curBiases.length));
+            return false;
+        }
+        for(var nodeCt = 0; nodeCt < layerSizes[layerCt]; nodeCt++){
+            if(curWeights[nodeCt].length != layerSizes[layerCt-1]){
+                console.log("Expected {0} weights, got {1}".format(curWeights[nodeCt].length, layerSizes[layerCt-1]));
+                return false;
+            }
+        }
+    }
+    return true;
+}
+function getNetworkJSON(){
+    var weightJson = JSON.stringify(weightMats);
+    var biasJson = JSON.stringify(biases);
+    return [weightJson, biasJson];
+}
+function saveNetwork(){
+
+}
+function generateNetwork(layerSizes, newWeights, newBiases){
     /*
     Description:
-        Regenerates the new network based on the values selected in the layers
+        Regenerates the new network based on the values in layer parameters
     */
+    var createVals = true;
+    if(newWeights != undefined && newBiases !=- undefined){
+        if (typeof newWeights == 'string'){
+            newWeights= JSON.parse(newWeights);
+        }
+        if (typeof newBiases == 'string'){
+            newBiases = JSON.parse(newBiases);
+        }
+        if(paramsAligned(layerSizes, newWeights, newBiases)){
+            createVals = false;
+            console.log(createVals);
+
+        }
+    }
     $('#outputBox').hide();
     var newNet = getBlankNet();
-    var numLayers = layerSelector.val();
-    var layerSizes = getLayerSizes();
-    nodes = []; weights = [];
+    var numLayers = layerSizes.length;
+    nodes = [], weights = [];
+    var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     weightMats = [], biases = [];
 
-    var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     for(var layer = 0; layer < numLayers; layer++){
         var layerSize = layerSizes[layer];
-        var nodeLayer = [], biasLayer = [];
+        var nodeLayer = [], biasLayer = []; // the layers for this current iteration
+        // set the height in the display
         var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));
-        for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
-            var bias = guassianRandom();
-            var curNode = new Node(layer, nodeCt);
 
+        for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
+            var curNode = new Node(layer, nodeCt);
             curNode.x = x;
             curNode.y = y;
             newNet.addChild(curNode.getSprite());
-
-            curNode.setValue(bias, true);
-            biasLayer.push(bias);
             nodeLayer.push(curNode);
-
+            if(layer != 0){
+                if(createVals) {
+                    var bias = guassianRandom();
+                }
+                else {
+                    var bias = newBiases[layer-1][nodeCt];
+                }
+                biasLayer.push(bias);
+                curNode.setValue(bias, true);
+            }
             y += 2*nodeRad + separation; // update the y value for the next circle
         }
         x += 2*nodeRad + 2*separation; // update the x value for the next layer
@@ -282,8 +383,23 @@ function createNetwork(){
                     var weight = new Weight(prevNode, node, layer);
                     weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
-                    weight.setValue(guassianRandom(), true);
-                    weightVals.push(weight.value());
+                    if(createVals){
+                        var weightVal = guassianRandom();
+                    }
+                    else if( newWeights[layer-1].length  == undefined ){
+                        if(newWeights[layer-1]._data != undefined){
+                            var weightVal = newWeights[layer-1]._data[nct][pct];
+                        }
+                        else{
+                            // this accounts for object manipulation after it has been stringified
+                            var weightVal = newWeights[layer-1].data[nct][pct];
+                        }
+                    }
+                    else{
+                        var weightVal = newWeights[layer-1][nct][pct];
+                    }
+                    weight.setValue(weightVal, true);
+                    weightVals.push(weightVal);
                     nodeWeights.push(weight);
                     newNet.addChild(weight.getSprite());
                 }
@@ -292,9 +408,10 @@ function createNetwork(){
             }
             weights.push(weightLayer);
             weightMats.push(math.matrix(layerVals));
+            biases.push(biasLayer);
         }
         nodes.push(nodeLayer);
-        biases.push(biasLayer);
+
     }
     addDrawnNet(newNet);
     setupInputFields();
@@ -322,7 +439,7 @@ function newWeightVals(weightVals){
         newMats.push(math.matrix(valLayer));
 
     }
-    weightMats = newMats;
+    newWeightMats = newMats;
 }
 function getWeights(){
     var weightVals = []

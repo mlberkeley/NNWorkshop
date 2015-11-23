@@ -27,7 +27,7 @@ function Weight(inputNode, outputNode, layer){
     this._weight = 0;
     this.updateDetails = function(weight){
         return function(){
-            editWeight(weight);
+            editObject(weight);
             // console.log(weight.repr());
         }
     };
@@ -103,15 +103,29 @@ function Node(layer, index){
         if(this.layer == 0)
             return 0;
         else
-            return biases[this.layer][this.index];
+            return biases[this.layer-1][this.index];
     };
     this.value = function(){
-        return this.bias();
+        if(this.layer !=0){
+            return this.bias();
+        }
+        else{
+            return getInputDom()[this.index].val();
+        }
     }
     this.setValue = function(newBias, init){
         this._bias = newBias;
         if (init == undefined || !init)
-            biases[this.layer][this.index] = newBias;
+        {
+
+            if(this.layer == 0){
+                var iptField = getInputDom()[this.index];
+                iptField.val(newBias);
+            }
+            else{
+                biases[this.layer-1][this.index] = newBias;
+            }
+        }
     }
     this.getDrawing = function(color){
         if(color == undefined)
@@ -124,7 +138,7 @@ function Node(layer, index){
     };
     this.updateDetails =function(node){
         return function(){
-            editBias(node);
+            editObject(node);
         }
     }
     this.getSprite = function(){
@@ -165,7 +179,12 @@ function Node(layer, index){
         return [this.x+this.rad, this.y];
     };
     this.repr = function(){
-        return "bias^{0}_{1}".format(this.layer, this.index);
+        if(this.layer != 0){
+            return "bias^{0}_{1}".format(this.layer, this.index);
+        }
+        else{
+            return "input^{0}".format(this.index);
+        }
     };
     this.select = function(){
         this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
@@ -176,7 +195,7 @@ function Node(layer, index){
 }
 function feedForward(inputs, perceptron){
     if(perceptron == undefined)
-        perceptron = true; // TODO this should be false and should be dependent on a checkbox
+        perceptron = isPerceptron();
 
     var num_inputs = getNetworkSizes()[0];
     assert(num_inputs == inputs.length,
@@ -187,8 +206,8 @@ function feedForward(inputs, perceptron){
     var output = inputs
     for(var layer=0; layer < weightMats.length; layer++){
         var matrix = weightMats[layer];
-        var biasLayer =biases[layer+1];
-        output = math.multiply(math.transpose(matrix), output);
+        var biasLayer =biases[layer];
+        output = math.multiply(matrix, output);
 
         output = math.add(output, biasLayer);
 
@@ -205,16 +224,23 @@ function feedForward(inputs, perceptron){
     }
 
     $('#outputLines').empty();
-    for(elm in output._data){
-        var line= $('<p></p>')
-        line.html(output._data[elm]);
+    if (output.length == 1){
+        var line = $("<p></p>");
+        line.html(output[0])
         $('#outputLines').append(line);
-    }$('#outputBox').show();
+    }
+    else{
+        for(elm in output._data){
+            var line= $('<p></p>');
+            line.html(output._data[elm]);
+            $('#outputLines').append(line);
+        }
+    }
+    $('#outputBox').show();
     return output
 
 
 }
 function guassianRandom(){
-    // TODO Make this actually guassian
     return (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3)/3;
 }
