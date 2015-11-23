@@ -75,6 +75,7 @@ function valueChangerRow(object, idx){
     name.html(object.repr());
     option.append(name);
     var input = $('<input class="form-control" id="obj{0}" onchange="selectedObjects[{0}].setValue(this.value)">'.format(idx))
+    input.val(object.value());
     option.append(input);
     return option;
 }
@@ -91,8 +92,6 @@ function updateWeightTable(index){
     for(var i = 0; i < selectedObjects.length; i++){
         weightTable.append(valueChangerRow(selectedObjects[i], i));
     }
-    console.log(weightTable.html());
-
 }
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////           Functions for drawing       ////////////////////
@@ -266,19 +265,20 @@ function createNetwork(){
             y += 2*nodeRad + separation; // update the y value for the next circle
         }
         x += 2*nodeRad + 2*separation; // update the x value for the next layer
-        // generate the weights
-
+        //////////////////////////////////////////////////
+        ///////////// generate the weights ///////////////
+        //////////////////////////////////////////////////
         if (layer != 0){ // We don't generate weights for the first layer
             prevLayer = nodes[nodes.length-1];
             var weightLayer = []
             var layerVals = [];
-            for(var pct = 0; pct < prevLayer.length; pct++){
-                var prevNode = prevLayer[pct];
-                var n = prevLayer.length;
+
+            for(var nct = 0; nct < nodeLayer.length; nct++){
+                var node = nodeLayer[nct];
                 var nodeWeights = [];
                 var weightVals = [];
-                for(var nct = 0; nct < nodeLayer.length; nct++){
-                    var node = nodeLayer[nct];
+                for(var pct = 0; pct < prevLayer.length; pct++){
+                    var prevNode = prevLayer[pct];
                     var weight = new Weight(prevNode, node, layer);
                     weight.right = node.inputCd(prevLayer.length, pct);
                     weight.left = prevNode.outputCd();
