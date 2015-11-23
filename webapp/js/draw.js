@@ -156,9 +156,12 @@ function editObject(object){
     fieldVal.val(object.value());
     fieldVal.focus();
     fieldVal.select();
-    fieldVal.keyup(function(event){
-        if(event.keyCode == 13){
-            $("#updateValBtn").click();
+    fieldVal.off();
+    fieldVal.on({
+        keyup: function(event){
+            if(event.keyCode == 13){
+                updateValue();
+            }
         }
     });
 }
