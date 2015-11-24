@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 
 class Perceptron:
     """ A perceptron model.
@@ -20,7 +20,10 @@ class Perceptron:
     def input(self, input_list):
         if self.ninputs != len(input_list):
             raise ValueError('The input list length should match the number of inputs')
-        weighted_sum = np.dot(self.weights, input_list)
+        weighted_sum = 0
+        for i in range(len(self.weights)):
+            weighted_sum+= self.weights[i] * input_list[i]
+        # weighted_sum = np.dot(self.weights, input_list)
         if weighted_sum > self.threshold:
             return 1
         else:
