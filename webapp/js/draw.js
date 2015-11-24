@@ -37,7 +37,9 @@ animate();
 
 // draw the network
 createNetwork();
-
+function displayLabels(){
+    return true;
+}
 function setupLayerSelector(){
 
     var weightSelector = $('#layer-select');
@@ -323,6 +325,7 @@ function generateNetwork(layerSizes, newWeights, newBiases){
     Description:
         Regenerates the new network based on the values in layer parameters
     */
+    $('.editor').hide();
     var createVals = true;
     if(newWeights != undefined && newBiases !=- undefined){
         if (typeof newWeights == 'string'){
@@ -343,13 +346,14 @@ function generateNetwork(layerSizes, newWeights, newBiases){
     nodes = [], weights = [];
     var x = 60; // TODO make this x based on the number of layers - center the network in the viewport
     weightMats = [], biases = [];
-
+    var minY = displayHeight;
+    var x_vals = [];
     for(var layer = 0; layer < numLayers; layer++){
         var layerSize = layerSizes[layer];
         var nodeLayer = [], biasLayer = []; // the layers for this current iteration
         // set the height in the display
         var y = displayHeight/2 - ((nodeRad+separation/2)*(layerSize-1));
-
+        minY = Math.min(y, minY);
         for(var nodeCt = 0; nodeCt < layerSize; nodeCt++){
             var curNode = new Node(layer, nodeCt);
             curNode.x = x;
@@ -369,6 +373,7 @@ function generateNetwork(layerSizes, newWeights, newBiases){
             y += 2*nodeRad + separation; // update the y value for the next circle
         }
         x += 2*nodeRad + 2*separation; // update the x value for the next layer
+
         //////////////////////////////////////////////////
         ///////////// generate the weights ///////////////
         //////////////////////////////////////////////////

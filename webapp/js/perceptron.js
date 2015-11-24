@@ -32,6 +32,7 @@ function Weight(inputNode, outputNode, layer){
         }
     };
     this.setValue = function(newWeight, init){
+        newWeight = parseFloat(Math.round(newWeight * 1000) / 1000).toFixed(3);
         this._weight = newWeight;
         if (init == undefined || !init)
             weightMats[this.l-1]._data[this.j][this.k] = newWeight;
@@ -82,6 +83,9 @@ function Weight(inputNode, outputNode, layer){
         return "w^{0}_[{1},{2}]".format(this.l,this.j,this.k);
     };
 }
+function getNodeValue(layer, index){
+    return biases[layer][index];
+}
 function Node(layer, index){
     /*
     Description:
@@ -114,6 +118,7 @@ function Node(layer, index){
         }
     }
     this.setValue = function(newBias, init){
+        newBias = parseFloat(Math.round(newBias * 1000) / 1000).toFixed(3);
         this._bias = newBias;
         if (init == undefined || !init)
         {
@@ -131,27 +136,47 @@ function Node(layer, index){
         if(color == undefined)
             color = 0;
         var nodeDrawing = new PIXI.Graphics();
-        nodeDrawing.lineStyle(1,color,1);
+        nodeDrawing.lineStyle(2,color,1);
         nodeDrawing.beginFill(0xFFFFFF);
-        nodeDrawing.drawCircle(this.x, this.y, this.rad);
-        return nodeDrawing;
+        nodeDrawing.drawCircle(0, 0, this.rad);
+        if(!displayLabels()){
+            var container = new PIXI.Container();
+            // getNodeValue(this.layer-1, this.index)
+            var nodeText = new PIXI.Text(this._bias, {font:"20px Arial", fill:"blue"});
+            nodeText.x -= 27;
+            nodeText.y -= 13;
+            // nodeDrawing.addChild(nodeText);
+            container.addChild(nodeDrawing);
+            container.addChild(nodeText);
+            return container.generateTexture(renderer);
+            // return nodeDrawing.generateTexture(renderer);
+        }
+        else{
+
+            return nodeDrawing.generateTexture(renderer);
+        }
     };
     this.updateDetails =function(node){
         return function(){
             editObject(node);
         }
     }
+    this.updateDrawing = function(){
+        /*
+        Description: Used in conjunction with
+        */
+    }
     this.getSprite = function(){
         if(this.sprite!=null){  // return the existing sprite
             return this.sprite;
         }
         // else make a new sprite
-        var sprite = new PIXI.Sprite(this.getDrawing().generateTexture());
+        var sprite = new PIXI.Sprite(this.getDrawing());
         sprite.interactive = true;
-        sprite.anchor.x = 0.5;
-        sprite.anchor.y = 0.5;
-        sprite.x = this.x;
-        sprite.y = this.y;
+        // sprite.anchor.x = 0.5;
+        // sprite.anchor.y = 0.5;
+        sprite.x = this.x-this.rad;
+        sprite.y = this.y-this.rad;
         sprite.click = this.updateDetails(this);
         this.sprite = sprite;
         return sprite;
@@ -187,10 +212,10 @@ function Node(layer, index){
         }
     };
     this.select = function(){
-        this.sprite.texture = this.getDrawing(0xFF0000).generateTexture();
+        this.sprite.texture = this.getDrawing(0xFF0000);
     };
     this.deselect = function(){
-        this.sprite.texture = this.getDrawing().generateTexture();
+        this.sprite.texture = this.getDrawing();
     };
 }
 function feedForward(inputs, perceptron){
