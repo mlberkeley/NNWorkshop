@@ -191,6 +191,10 @@ function bitwiseNetwork(){
     var parameters = ['[{"mathjs":"DenseMatrix","data":[["1.000","0.000"],["-2.000","-2.000"],["0.000","1.000"]],"size":[3,2]},{"mathjs":"DenseMatrix","data":[["-2.000","-2.000","0.000"],["0.000","-2.000","-2.000"],["0.000","-4.000","0.000"]],"size":[3,3]},{"mathjs":"DenseMatrix","data":[["-2.000","-2.000","0.000"],["0.000","0.000","1.000"]],"size":[2,3]}]','[["0.000","3.000","0.000"],["3.000","3.000","0.000"],["3.000","3.000"]]']
     generateNetwork([2,3,3,2], parameters[0],parameters[1]);
 }
+function xorNetwork(){
+    var parameters = ['[{"mathjs":"DenseMatrix","data":[["1.000","0.000"],["1.000","1.000"],["0.000","1.000"]],"size":[3,2]},{"mathjs":"DenseMatrix","data":[["1.000","-2.000","1.000"]],"size":[1,3]}]', '[["-1.000","-2.000","-1.000"],["1.000"]]'];
+    generateNetwork([2,3,1],parameters[0],parameters[1]);
+}
 function isPerceptron(){
     /*
     Description:

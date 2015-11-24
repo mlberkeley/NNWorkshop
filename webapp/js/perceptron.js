@@ -233,18 +233,11 @@ function feedForward(inputs, perceptron){
         var matrix = weightMats[layer];
         var biasLayer =biases[layer];
         output = math.multiply(matrix, output);
-
         output = math.add(output, biasLayer);
-
+        console.log(output._data, output);
         if(perceptron){
-            output = output.map(function(val, idx, matrix){
-                if (val > 0){
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
-            });
+            output = output.map(perceptronActivation);
+            console.log(output);
         }
     }
 
@@ -265,6 +258,14 @@ function feedForward(inputs, perceptron){
     return output
 
 
+}
+function perceptronActivation(val, idx, matrix){
+    if (val >= 0){
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 function guassianRandom(){
     return (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3)/3;
