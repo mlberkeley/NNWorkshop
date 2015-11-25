@@ -2,3 +2,4 @@
 mnist_loader.py
 data/
 *.npy
+__pycache__
