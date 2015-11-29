@@ -3,3 +3,10 @@ mnist_loader.py
 data/
 *.npy
 __pycache__
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
