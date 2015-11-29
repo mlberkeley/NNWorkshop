@@ -1,0 +1,15 @@
+# A sample of the data input format!
+# Essentially `{inputs} -> {desired outputs};`
+
+
+{1,1,0,
+ 0,1,0,
+ 0,0,0} -> {1};
+
+ {1,1,0,
+ 0,1,0,
+ 0,0,0} -> {1};
+
+ {1,1,0,
+ 0,1,0,
+ 0,0,0} -> {1};
