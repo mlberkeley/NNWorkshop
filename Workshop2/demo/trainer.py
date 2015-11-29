@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+"""trainer.py. A trainer class for
+the neural network workshop by Robotics @ Berkeley."""
+
+__author__ = "William Guss"
+
 import re
 from getch import getch
 
