@@ -122,16 +122,6 @@ Robotics @ Berkeley \\
 \section{Feed-Forward Neural Networks} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %-----------------------------------------------
 
-    \subsection{How They Work} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
-    \subsection{Universal Approximation (Briefly)}
-
-\section{Training}
-
-    \subsection{Nonconvex Optimization}
-    \subsection{Error-Backpropagation}
-
-\section{Deep Learning}
-
     \begin{frame}[plain,c]
         \begin{center}
         \Huge Feed-Forward Neural Networks
@@ -141,22 +131,55 @@ Robotics @ Berkeley \\
 
     \begin{frame}
         \frametitle{Perceptron Review}
-        [TODO: IMAGE OF PERCEPTRON]
+        [TODO: IMAGE OF PERCEPTRON AND SIGN FUNCTIO]
         \begin{itemize}
         \item Perceptrons are neural computation units which make \emph{weighted} decisions:
         \begin{equation*}
-            p(\pmb x) = \left\{
-             \begin{array}l
-             1\ \text{if}\ \sum w_ix_i + b\geq 0\\
-             0\ \text{otherwise}
-            \end{array}
-            \right.
+            \begin{aligned}
+                p(\pmb x) &= \left\{
+                 \begin{array}l
+                 1\ \text{if}\ \sum w_ix_i + b\geq 0\\
+                 0\ \text{otherwise}
+                \end{array}
+                \right. \\
+                &= \frac{\text{sign}\left(\sum w_ix_i + b\rigth) + 1}{2}
+            \end{aligned}
         \end{equation*}
         \item Perceptrons are not powerful enough, as seen last time with XOR.
-        \item What if we want real valued output for tasks like predicitng
+        \item What if we want real valued output for tasks like predicting
          the temparature or stock prices?
         \end{itemize}
     \end{frame}
+
+    \begin{frame}
+        \frametitle{Feedforward Neural Networks}
+        [TODO: IMAGE OF FEED FORWARD NETWORK]
+        \begin{itemize}
+        \item Feedforward Artifical Neural Networks (ANNs) are the \emph{continuous}
+        extensions of perceptrons.
+        \item ANNs can have many layers and different nodes
+         which are \emph{fully connected.}
+         \item Generally, the more layers and nodes, the greater the computational 
+         power of the network!
+         \item The intuition behind this model is that each neuron in the network
+         makes a weighted decision like the perceptron. Many \emph{stacked} decisions
+         allows for extremely complex logic! 
+        \end{itemize}
+    \end{frame}
+
+    \subsection{How They Work} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
+    
+
+
+    \subsection{Universal Approximation (Briefly)}
+
+\section{Training}
+
+    \subsection{Nonconvex Optimization}
+    \subsection{Error-Backpropagation}
+
+\section{Deep Learning}
+
 
 %------------------------------------------------
 
