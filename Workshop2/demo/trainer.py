@@ -63,4 +63,4 @@ class Trainer:
 # A good test case.
 test = Trainer(1)
 test.load_data("sample.data", True)
-test.interactive_step(1)
+test.interactive_step(1,2)
