@@ -4,9 +4,12 @@ the neural network workshop by Robotics @ Berkeley."""
 
 __author__ = "William Guss"
 
-import math
+import sigmoid
+
 
 class Network:
     """Represents a neural network using sigmoidal activations."""
 
-    def __init__(self, layers, acitvation)
+    def __init__(self, layers, activation=sigmoid.LogisticSigmoid):
+        """Constructs a neural network with a set of layers."""
+        self.activation = activation
