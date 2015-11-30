@@ -9,7 +9,7 @@ import sigmoid
 class Neuron:
     """ Represents the neuron object in the network graph """
 
-    def __init__(self, sigmoid=sigmoid.LogisticSigmoid):
+    def __init__(self, sigmoid=sigmoid.Logistic):
         """ Initializes the neuron and sets
          sigmoid to the Logistic function """
         self.net = 0

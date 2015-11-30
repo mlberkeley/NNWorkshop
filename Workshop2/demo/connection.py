@@ -1,14 +1,13 @@
 __author__ = "Phillip Kuznetsov"
 
 import random
-import math
 
 
 class Connection:
     """ Represents a connection between the neuron
      components of each layer. """
 
-    def __init__(self, anterior, posterior, weight=math.gauss(0, 1)):
+    def __init__(self, anterior, posterior, weight=random.gauss(0, 1)):
         """ Creates a weight that connects the
          anterior neuron to the posterior neuron."""
         self.anterior = anterior
