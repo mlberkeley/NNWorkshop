@@ -16,17 +16,24 @@ class Network:
         self.bias = Neuron(sigmoid.Constant)
 
         self.neurons = []
-        for layer in enumerate(layers):
-            self.neurons.append(list())
-            for i in range(0, layers[layer]):
-                # Input neurons shouldn't activate their input.
-                if layer is 0:
-                    self.neurons[layer].append(Neuron(sigmoid.LinearSigmoid))
-                else:
-                    self.neurons[layer].append(Neuron(activation))
-
         self.connections = []
 
+        for layer in enumerate(layers):
+            self.neurons.append(list())
+            self.connections.append(list())
+            for i in range(0, layers[layer]):
+                # Input neurons shouldn't activate their input.
+                curNeuron = None
+                if layer is 0:
+                    curNeuron = Neuron(sigmoid.LinearSigmoid)
+                else:
+                    curNeuron = Neuron(activation)
+                    
+                    #Now connect all neurons in the previous layer to this layer
+                    for anterior_neuron in neurons[layer-1]:
+                        connections[layer]
+
+                self.neurons[layer].append(curNeuron)
 
 
 
