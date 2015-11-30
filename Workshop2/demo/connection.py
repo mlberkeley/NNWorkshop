@@ -1,9 +1,8 @@
 __author__ = "Phillip Kuznetsov"
 
 import random
-from jsontools import Object
 
-class Connection(Object):
+class Connection:
     """ Represents a connection between the neuron
      components of each layer. """
 

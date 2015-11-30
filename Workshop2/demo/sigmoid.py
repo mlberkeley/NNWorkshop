@@ -5,10 +5,9 @@ the neural network workshop by Robotics @ Berkeley."""
 __author__ = "William Guss"
 
 import math
-from jsontools import Object
 
 
-class Sigmoid(Object):
+class Sigmoid:
     """ Represents a sigmoid activation function with derivative."""
 
     def __init__(self, f, fprime):
