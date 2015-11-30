@@ -44,7 +44,9 @@ class Trainer:
             outp = self.network.feedforward(datapair[0])
             error = self.network.train(datapair, rate)
             if verbose:
-                print(datapair, "--", error)
+                render = str(datapair)[:45] + '..' if len(str(datapair)) > 45 \
+                    else str(datapair)
+                print(render, "--", error)
                 print("\tOutput:", outp)
             netloss += error
 
