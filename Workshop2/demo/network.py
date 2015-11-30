@@ -58,8 +58,11 @@ class Network:
             "Input vector does not match the network intut layer"
         for i in enumerate(inputs):
             self.neurons[0][i] = inputs[i]
-        for connection_layer in self.connections:
-            for connection in connection_layer:
-                connection.feedforward()
+        for layer in enumerate(self.neurons):
+            for neuron in self.neurons[layer]:
+                neuron.activate()
+            if layer != len(self.neurons)-1:
+                for connection in self.connections:
+                    connection.feedforward()
     def backpropagate(self):
         pass
