@@ -32,6 +32,7 @@ def logistic(x):
     """Yields a logistic mapping."""
     return 1.0/(1 + math.exp(-x))
 
-TanhSigmoid = Sigmoid(math.tanh, lambda x: 1 - math.tanh(x) ** 2)
-LogisticSigmoid = Sigmoid(logistic, lambda x: logistic(x)*(1 - logistic(x)))
-LinearSigmoid = Sigmoid(lambda x: x, lambda x: 1)
+Tanh = Sigmoid(math.tanh, lambda x: 1 - math.tanh(x) ** 2)
+Logistic = Sigmoid(logistic, lambda x: logistic(x)*(1 - logistic(x)))
+Linear = Sigmoid(lambda x: x, lambda x: 1)
+Const = Sigmoid(lambda x: 1, lambda x: 0)
