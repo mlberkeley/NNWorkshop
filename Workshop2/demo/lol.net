@@ -1,0 +1,514 @@
+{
+    "connections": [
+        [
+            {
+                "py/id": 7
+            },
+            {
+                "py/id": 18
+            },
+            {
+                "py/id": 4
+            },
+            {
+                "py/id": 11
+            },
+            {
+                "py/id": 14
+            },
+            {
+                "py/id": 46
+            },
+            {
+                "py/id": 22
+            },
+            {
+                "py/id": 19
+            },
+            {
+                "py/id": 47
+            },
+            {
+                "py/id": 32
+            },
+            {
+                "py/id": 33
+            },
+            {
+                "py/id": 48
+            },
+            {
+                "py/id": 39
+            },
+            {
+                "py/id": 40
+            },
+            {
+                "py/id": 49
+            }
+        ],
+        [
+            {
+                "py/id": 27
+            },
+            {
+                "py/id": 28
+            },
+            {
+                "py/id": 24
+            },
+            {
+                "py/id": 29
+            },
+            {
+                "py/id": 36
+            },
+            {
+                "py/id": 50
+            }
+        ]
+    ],
+    "neurons": [
+        [
+            {
+                "py/id": 8
+            },
+            {
+                "py/id": 15
+            }
+        ],
+        [
+            {
+                "py/id": 5
+            },
+            {
+                "py/id": 12
+            },
+            {
+                "py/id": 20
+            },
+            {
+                "py/id": 30
+            },
+            {
+                "py/id": 37
+            }
+        ],
+        [
+            {
+                "py/id": 25
+            }
+        ]
+    ],
+    "py/object": "network.Network",
+    "bias": {
+        "gradient_net": 1,
+        "posteriors": [
+            {
+                "posterior": {
+                    "gradient_net": 0.4381052461922432,
+                    "posteriors": [
+                        {
+                            "py/id": 27
+                        }
+                    ],
+                    "net": 0,
+                    "sigmoid": {
+                        "py/id": 35
+                    },
+                    "error": -1.0494831547049267e-10,
+                    "anteriors": [
+                        {
+                            "posterior": {
+                                "py/id": 5
+                            },
+                            "weight": -0.5502020647317748,
+                            "last_delta_weight": -0.00033021080891350925,
+                            "momentum": 0,
+                            "py/object": "connection.Connection",
+                            "anterior": {
+                                "gradient_net": 1,
+                                "posteriors": [
+                                    {
+                                        "py/id": 7
+                                    },
+                                    {
+                                        "posterior": {
+                                            "gradient_net": 0.1280730335819008,
+                                            "posteriors": [
+                                                {
+                                                    "py/id": 28
+                                                }
+                                            ],
+                                            "net": 0,
+                                            "sigmoid": {
+                                                "py/id": 35
+                                            },
+                                            "error": -1.6210789547676324e-11,
+                                            "anteriors": [
+                                                {
+                                                    "py/id": 11
+                                                },
+                                                {
+                                                    "posterior": {
+                                                        "py/id": 12
+                                                    },
+                                                    "weight": 0.6928737882550629,
+                                                    "last_delta_weight": -0.0007746775034875674,
+                                                    "momentum": 0,
+                                                    "py/object": "connection.Connection",
+                                                    "anterior": {
+                                                        "gradient_net": 1,
+                                                        "posteriors": [
+                                                            {
+                                                                "posterior": {
+                                                                    "py/id": 5
+                                                                },
+                                                                "weight": 0.14461219208952822,
+                                                                "last_delta_weight": -0.00033021080891350925,
+                                                                "momentum": 0,
+                                                                "py/object": "connection.Connection",
+                                                                "anterior": {
+                                                                    "py/id": 15
+                                                                }
+                                                            },
+                                                            {
+                                                                "py/id": 14
+                                                            },
+                                                            {
+                                                                "posterior": {
+                                                                    "gradient_net": 0.019785097174538357,
+                                                                    "posteriors": [
+                                                                        {
+                                                                            "posterior": {
+                                                                                "gradient_net": 1.9558712491263286e-05,
+                                                                                "posteriors": [],
+                                                                                "net": 0,
+                                                                                "sigmoid": {
+                                                                                    "py/id": 35
+                                                                                },
+                                                                                "error": -1.9127255242351177e-10,
+                                                                                "anteriors": [
+                                                                                    {
+                                                                                        "posterior": {
+                                                                                            "py/id": 25
+                                                                                        },
+                                                                                        "weight": 1.252403766664056,
+                                                                                        "last_delta_weight": 2.8675443111270387e-10,
+                                                                                        "momentum": 0,
+                                                                                        "py/object": "connection.Connection",
+                                                                                        "anterior": {
+                                                                                            "py/id": 5
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "posterior": {
+                                                                                            "py/id": 25
+                                                                                        },
+                                                                                        "weight": 0.6617497991042322,
+                                                                                        "last_delta_weight": 3.5720925593510446e-10,
+                                                                                        "momentum": 0,
+                                                                                        "py/object": "connection.Connection",
+                                                                                        "anterior": {
+                                                                                            "py/id": 12
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "py/id": 24
+                                                                                    },
+                                                                                    {
+                                                                                        "posterior": {
+                                                                                            "py/id": 25
+                                                                                        },
+                                                                                        "weight": 0.6533755346264345,
+                                                                                        "last_delta_weight": 2.787494036029268e-10,
+                                                                                        "momentum": 0,
+                                                                                        "py/object": "connection.Connection",
+                                                                                        "anterior": {
+                                                                                            "gradient_net": 0.46903903278106107,
+                                                                                            "posteriors": [
+                                                                                                {
+                                                                                                    "py/id": 29
+                                                                                                }
+                                                                                            ],
+                                                                                            "net": 0,
+                                                                                            "sigmoid": {
+                                                                                                "py/object": "sigmoid.Sigmoid",
+                                                                                                "derivative": {
+                                                                                                    "py/function": "sigmoid.tanh_prime"
+                                                                                                }
+                                                                                            },
+                                                                                            "error": -5.861712411854119e-11,
+                                                                                            "anteriors": [
+                                                                                                {
+                                                                                                    "posterior": {
+                                                                                                        "py/id": 30
+                                                                                                    },
+                                                                                                    "weight": 0.17419790207766742,
+                                                                                                    "last_delta_weight": -0.0007436354933724991,
+                                                                                                    "momentum": 0,
+                                                                                                    "py/object": "connection.Connection",
+                                                                                                    "anterior": {
+                                                                                                        "py/id": 8
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "posterior": {
+                                                                                                        "py/id": 30
+                                                                                                    },
+                                                                                                    "weight": 0.5812263739157292,
+                                                                                                    "last_delta_weight": -0.0007436354933724991,
+                                                                                                    "momentum": 0,
+                                                                                                    "py/object": "connection.Connection",
+                                                                                                    "anterior": {
+                                                                                                        "py/id": 15
+                                                                                                    }
+                                                                                                }
+                                                                                            ],
+                                                                                            "py/object": "neuron.Neuron",
+                                                                                            "output": 0.7286706850278382
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "posterior": {
+                                                                                            "py/id": 25
+                                                                                        },
+                                                                                        "weight": 0.44870875586649345,
+                                                                                        "last_delta_weight": 3.714402553425243e-10,
+                                                                                        "momentum": 0,
+                                                                                        "py/object": "connection.Connection",
+                                                                                        "anterior": {
+                                                                                            "gradient_net": 0.057215051440731024,
+                                                                                            "posteriors": [
+                                                                                                {
+                                                                                                    "py/id": 36
+                                                                                                }
+                                                                                            ],
+                                                                                            "net": 0,
+                                                                                            "sigmoid": {
+                                                                                                "py/id": 35
+                                                                                            },
+                                                                                            "error": -4.910520064385218e-12,
+                                                                                            "anteriors": [
+                                                                                                {
+                                                                                                    "posterior": {
+                                                                                                        "py/id": 37
+                                                                                                    },
+                                                                                                    "weight": 0.4273220788487911,
+                                                                                                    "last_delta_weight": -0.0005108850921866585,
+                                                                                                    "momentum": 0,
+                                                                                                    "py/object": "connection.Connection",
+                                                                                                    "anterior": {
+                                                                                                        "py/id": 8
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "posterior": {
+                                                                                                        "py/id": 37
+                                                                                                    },
+                                                                                                    "weight": 1.8475687181220286,
+                                                                                                    "last_delta_weight": -0.0005108850921866585,
+                                                                                                    "momentum": 0,
+                                                                                                    "py/object": "connection.Connection",
+                                                                                                    "anterior": {
+                                                                                                        "py/id": 15
+                                                                                                    }
+                                                                                                }
+                                                                                            ],
+                                                                                            "py/object": "neuron.Neuron",
+                                                                                            "output": 0.970971136831198
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "py/object": "neuron.Neuron",
+                                                                                "output": 0.999990220595936
+                                                                            },
+                                                                            "weight": 1.0331422598845539,
+                                                                            "last_delta_weight": 3.787418529021891e-10,
+                                                                            "momentum": 0,
+                                                                            "py/object": "connection.Connection",
+                                                                            "anterior": {
+                                                                                "py/id": 20
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "net": 0,
+                                                                    "sigmoid": {
+                                                                        "py/id": 35
+                                                                    },
+                                                                    "error": -3.9097678149233385e-12,
+                                                                    "anteriors": [
+                                                                        {
+                                                                            "posterior": {
+                                                                                "py/id": 20
+                                                                            },
+                                                                            "weight": 0.5739710467463943,
+                                                                            "last_delta_weight": -0.0007452599311400462,
+                                                                            "momentum": 0,
+                                                                            "py/object": "connection.Connection",
+                                                                            "anterior": {
+                                                                                "py/id": 8
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "py/id": 19
+                                                                        }
+                                                                    ],
+                                                                    "py/object": "neuron.Neuron",
+                                                                    "output": 0.9900580300292815
+                                                                },
+                                                                "weight": 1.3499065209099756,
+                                                                "last_delta_weight": -0.0007452599311400462,
+                                                                "momentum": 0,
+                                                                "py/object": "connection.Connection",
+                                                                "anterior": {
+                                                                    "py/id": 15
+                                                                }
+                                                            },
+                                                            {
+                                                                "py/id": 33
+                                                            },
+                                                            {
+                                                                "py/id": 40
+                                                            }
+                                                        ],
+                                                        "net": 0,
+                                                        "sigmoid": {
+                                                            "py/object": "sigmoid.Sigmoid",
+                                                            "derivative": {
+                                                                "py/function": "sigmoid.linear_prime"
+                                                            },
+                                                            "map": {
+                                                                "py/function": "sigmoid.linear"
+                                                            }
+                                                        },
+                                                        "error": 0.0014843659682869607,
+                                                        "anteriors": [],
+                                                        "py/object": "neuron.Neuron",
+                                                        "output": 1
+                                                    }
+                                                }
+                                            ],
+                                            "py/object": "neuron.Neuron",
+                                            "output": 0.9337702963888385
+                                        },
+                                        "weight": 0.9781392022517581,
+                                        "last_delta_weight": -0.0007746775034875674,
+                                        "momentum": 0,
+                                        "py/object": "connection.Connection",
+                                        "anterior": {
+                                            "py/id": 8
+                                        }
+                                    },
+                                    {
+                                        "py/id": 22
+                                    },
+                                    {
+                                        "py/id": 32
+                                    },
+                                    {
+                                        "py/id": 39
+                                    }
+                                ],
+                                "net": 0,
+                                "sigmoid": {
+                                    "py/id": 43
+                                },
+                                "error": 0.0006768740928907531,
+                                "anteriors": [],
+                                "py/object": "neuron.Neuron",
+                                "output": 1
+                            }
+                        },
+                        {
+                            "py/id": 18
+                        }
+                    ],
+                    "py/object": "neuron.Neuron",
+                    "output": 0.7495963939399367
+                },
+                "weight": 1.3769626352158146,
+                "last_delta_weight": 2.0989663094098534e-10,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            },
+            {
+                "posterior": {
+                    "py/id": 12
+                },
+                "weight": 0.014486574698731762,
+                "last_delta_weight": 3.242157909535265e-11,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            },
+            {
+                "posterior": {
+                    "py/id": 20
+                },
+                "weight": 0.7242088579346337,
+                "last_delta_weight": 7.819535629846677e-12,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            },
+            {
+                "posterior": {
+                    "py/id": 30
+                },
+                "weight": 0.16897582035290137,
+                "last_delta_weight": 1.1723424823708239e-10,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            },
+            {
+                "posterior": {
+                    "py/id": 37
+                },
+                "weight": -0.1669170439356931,
+                "last_delta_weight": 9.821040128770436e-12,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            },
+            {
+                "posterior": {
+                    "py/id": 25
+                },
+                "weight": 2.6228178592175704,
+                "last_delta_weight": 3.8254510484702354e-10,
+                "momentum": 0,
+                "py/object": "connection.Connection",
+                "anterior": {
+                    "py/id": 1
+                }
+            }
+        ],
+        "net": 0,
+        "sigmoid": {
+            "py/object": "sigmoid.Sigmoid",
+            "derivative": {
+                "py/function": "sigmoid.const"
+            },
+            "map": {
+                "py/function": "sigmoid.const"
+            }
+        },
+        "error": 0,
+        "anteriors": [],
+        "py/object": "neuron.Neuron",
+        "output": 1
+    }
+}

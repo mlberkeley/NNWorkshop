@@ -1,9 +1,9 @@
 __author__ = "Phillip Kuznetsov"
 
 import random
+from jsontools import Object
 
-
-class Connection:
+class Connection(Object):
     """ Represents a connection between the neuron
      components of each layer. """
 
@@ -14,7 +14,7 @@ class Connection:
         self.posterior = posterior
         if not weight:
             weight = random.gauss(0, 1)
-        self.weight = weight  
+        self.weight = weight 
         self.momentum = 0
         self.last_delta_weight = 0
 

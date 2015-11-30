@@ -41,10 +41,11 @@ class Trainer:
         the network on a loaded dataset"""
         netloss = 0
         for datapair in self.data:
+            outp = self.network.feedforward(datapair[0])
             error = self.network.train(datapair, rate)
             if verbose:
                 print(datapair, "--", error)
-                print("\tOutput:", self.network.feedforward(datapair[0]))
+                print("\tOutput:", outp)
             netloss += error
 
         return netloss

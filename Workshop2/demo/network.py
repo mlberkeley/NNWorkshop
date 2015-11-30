@@ -7,9 +7,9 @@ __author__ = "William Guss"
 import sigmoid
 from neuron import Neuron
 from connection import Connection
+from jsontools import Object
 
-
-class Network:
+class Network(Object):
     """
     Represents a neural network using sigmoidal activations.
 
@@ -115,16 +115,16 @@ class Network:
         losses = [x[0] - x[1] for x in zip(outputs, desired)]
         error = sum(map(lambda x: x ** 2, losses))
 
-        #print(losses)
+        print(losses)
 
 
         # manually set the error coefficients for the output error.
         for output_neuron, loss in zip(self.neurons[-1], losses):
             output_neuron.set_error(loss)
 
-        #print([x.error for x in self.neurons[-1]])
 
-        for n_layer, c_layer in zip(self.neurons[:-1], self.connections):
+
+        for n_layer in self.neurons[:-1]:
             for neuron in n_layer:
                 error_coef = 0
                 for con in neuron.posteriors:
@@ -151,3 +151,14 @@ class Network:
         """Gets a weight from a neuron indexed LEFT in
         LAYER to a neuron indexed RIGHT on the posterior neuron"""
         return self.neurons[layer][left].posteriors[right].weight
+
+    def save_network(self, filename):
+        """Requires json pickle."""
+        import json, jsonpickle 
+        f = open(filename, 'w')
+        
+        f.write(json.dumps(json.loads(jsonpickle.encode(self)), indent = 4))
+
+
+    def load_network(filename):
+        pass

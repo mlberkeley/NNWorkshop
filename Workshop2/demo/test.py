@@ -5,4 +5,4 @@ from trainer import Trainer
 net = Network((2,5,1))
 teacher = Trainer(net)
 teacher.load_data("sample.data")
-teacher.interactive_step(0.7, True)
+teacher.interactive_step(2, True)

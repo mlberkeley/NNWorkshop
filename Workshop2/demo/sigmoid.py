@@ -5,9 +5,10 @@ the neural network workshop by Robotics @ Berkeley."""
 __author__ = "William Guss"
 
 import math
+from jsontools import Object
 
 
-class Sigmoid:
+class Sigmoid(Object):
     """ Represents a sigmoid activation function with derivative."""
 
     def __init__(self, f, fprime):
@@ -32,7 +33,23 @@ def logistic(x):
     """Yields a logistic mapping."""
     return 1.0/(1 + math.exp(-x))
 
-Tanh = Sigmoid(math.tanh, lambda x: 1 - math.tanh(x) ** 2)
-Logistic = Sigmoid(logistic, lambda x: logistic(x)*(1 - logistic(x)))
-Linear = Sigmoid(lambda x: x, lambda x: 1)
-Constant = Sigmoid(lambda x: 1, lambda x: 0)
+def logistic_prime(x):
+    return logistic(x)*(1 - logistic(x))
+
+def tanh_prime(x):
+    return 1 - math.tanh(x) ** 2
+
+def linear(x):
+    return x
+
+def linear_prime(x):
+    return 1
+
+def const(x):
+    return 1
+
+
+Tanh = Sigmoid(math.tanh, tanh_prime )
+Logistic = Sigmoid(logistic, logistic_prime )
+Linear = Sigmoid(linear, linear_prime)
+Constant = Sigmoid(const, const)

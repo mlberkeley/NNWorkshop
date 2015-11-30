@@ -4,9 +4,10 @@ the Robotics @ Berkeley neural network workshop."""
 __author__ = "Phillip Kuznetsov"
 
 import sigmoid
+from jsontools import Object
 
 
-class Neuron:
+class Neuron(Object):
     """ Represents the neuron object in the network graph """
 
     def __init__(self, sigmoid=sigmoid.Logistic):
