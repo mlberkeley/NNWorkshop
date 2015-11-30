@@ -54,13 +54,7 @@ class Trainer:
         print("Training with learning rate =", rate)
         print("Press any key to step and `q` to quit.")
         epoch = 0
-
-        while getch() is not 'q':
+        while getch() != 'q':
             error = self.step(rate, verbose)
             epoch += 1
             print("Epoch", epoch, " -- training error is", error)
-
-# A good test case.
-test = Trainer(1)
-test.load_data("sample.data", True)
-test.interactive_step(1,2)
