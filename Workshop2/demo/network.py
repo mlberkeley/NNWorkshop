@@ -29,10 +29,11 @@ class Network:
                 else:
                     cur_neuron = Neuron(activation)
 
-                    for anterior in neurons[layer-1]:
-                        connections[layer].append(
+                    for anterior in self.neurons[layer-1]:
+                        self.connections[layer].append(
                             Connection(anterior, cur_neuron))
-                    connection[layer].append(Connection(bias, cur_neuron))
+                    self.connections[layer].append(
+                        Connection(self.bias, cur_neuron))
 
                 self.neurons[layer].append(cur_neuron)
 
