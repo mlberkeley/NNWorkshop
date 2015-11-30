@@ -15,6 +15,8 @@ class Connection:
         if not weight:
             weight = random.gauss(0, 1)
         self.weight = weight  
+        self.momentum = 0
+        self.last_delta_weight = 0
 
     def feedforward(self):
         """ Feeds the weighted output of the anterior
@@ -24,8 +26,10 @@ class Connection:
     def update_weight(self, rate):
         grad = self.posterior.error * self.anterior.output
 
-       # perform bprop
-        self.weight += -(grad * rate)
+        # perform bprop
+        delta_weight = -(grad * rate) + self.momentum * self.last_delta_weight
+        self.weight += delta_weight
+        self.last_delta_weight = delta_weight
 
     def __repr__(self):
         return str(self.weight)

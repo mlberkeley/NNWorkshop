@@ -15,7 +15,7 @@ class Network:
 
     """
 
-    def __init__(self, layerCounts, activation=sigmoid.Logistic):
+    def __init__(self, layerCounts, activation=sigmoid.Tanh):
         """Constructs a neural network with a set of layers.
         >>> n = Network([2,3,2])
         >>> len(n.neurons)
@@ -112,22 +112,31 @@ class Network:
         """ Updates the weights based on the desired output and
         the learning rate using error backpropagation."""
         outputs = [n.output for n in self.neurons[-1]]
-        losses = map(lambda x: x[0] - x[1], zip(outputs, desired))
+        losses = [x[0] - x[1] for x in zip(outputs, desired)]
         error = sum(map(lambda x: x ** 2, losses))
+
+        #print(losses)
+
 
         # manually set the error coefficients for the output error.
         for output_neuron, loss in zip(self.neurons[-1], losses):
             output_neuron.set_error(loss)
 
+        #print([x.error for x in self.neurons[-1]])
+
         for n_layer, c_layer in zip(self.neurons[:-1], self.connections):
             for neuron in n_layer:
                 error_coef = 0
-                for con in filter(lambda x: x.anterior is neuron, c_layer):
+                for con in neuron.posteriors:
                     error_coef += con.posterior.error * con.weight
 
                     con.update_weight(learning_rate)
 
                 neuron.set_error(error_coef)
+
+        # fix bias error
+        for con in self.bias.posteriors:
+            con.update_weight(learning_rate)
 
         return error
 
