@@ -2,7 +2,7 @@
 from network import Network
 from trainer import Trainer
 
-net = Network((2,4,4,1))
+net = Network((18,20,8,4,2))
 teacher = Trainer(net)
-teacher.load_data("sample.data")
-teacher.interactive_step(0.5)
+teacher.load_data("datasets/tictactoe.data")
+teacher.interactive_step(0.2)
