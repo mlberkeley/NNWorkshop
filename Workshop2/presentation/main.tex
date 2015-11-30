@@ -66,9 +66,13 @@
 }
 
 \usepackage{graphicx} % Allows including images
+\graphicspath{ {images/} }
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+<<<<<<< HEAD
+=======
 \def\layersep{2cm}
 \usepackage{tikz}
+>>>>>>> 3ce3a92e1a3d8ff25046d4b95e4b1bb43fbaf0c9
 %----------------------------------------------------------------------------------------
 %   TITLE PAGE
 %----------------------------------------------------------------------------------------
@@ -91,7 +95,7 @@
   }
   {William Guss \& Phillip Kuznetsov}
 }
-\institute[UCB] 
+\institute[UCB]
 {
 University of California, Berkeley \\
 Robotics @ Berkeley \\
@@ -102,7 +106,7 @@ Robotics @ Berkeley \\
 \begin{document}
 
 \begin{frame}
-\titlepage 
+\titlepage
 \end{frame}
 
 \begin{frame}
@@ -125,7 +129,9 @@ Robotics @ Berkeley \\
 
     \begin{frame}
         \frametitle{Perceptron Review}
-        [TODO: IMAGE OF PERCEPTRON AND SIGN FUNCTIO]
+        \begin{center}
+            \includegraphics[scale=.3]{perceptron}
+        \end{center}
         \begin{itemize}
         \item Perceptrons are neural computation units which make \emph{weighted} decisions:
         \begin{equation*}
@@ -153,16 +159,16 @@ Robotics @ Berkeley \\
         extensions of perceptrons.
         \item ANNs can have many layers and different nodes
          which are \emph{fully connected.}
-         \item Generally, the more layers and nodes, the greater the computational 
+         \item Generally, the more layers and nodes, the greater the computational
          power of the network!
          \item The intuition behind this model is that each neuron in the network
          makes a weighted decision like the perceptron. Many \emph{stacked} decisions
-         allows for extremely complex logic. 
+         allows for extremely complex logic.
         \end{itemize}
     \end{frame}
 
     \subsection{How They Work} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
-    
+
 
 
     \subsection{Universal Approximation (Briefly)}
@@ -343,4 +349,4 @@ This statement requires citation \cite{p1}.
 
 %----------------------------------------------------------------------------------------
 
-\end{document} 
+\end{document}
