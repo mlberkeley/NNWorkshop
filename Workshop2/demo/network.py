@@ -42,15 +42,16 @@ class Network:
         Returns the net error across ouytput neurons.
         Assunmes input matches network size."""
         inp = datapair[0]
-        out = datapair[1]
+        desired = datapair[1]
 
         self.feedforward(inp)
-        error = self.backpropagate(out, rate)
+        error = self.backpropagate(desired, rate)
 
         return error
 
     def feedforward(self, input):
-        """ Passes the input data through the network and creates the output """
+        """ Passes the input data through
+         the network and creates the output """
         assert(len(input) == len(self.neurons[0]),
                "Input vector does not match the network intut layer")
         for i in enumerate(input):
