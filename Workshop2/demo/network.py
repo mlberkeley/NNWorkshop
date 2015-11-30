@@ -9,7 +9,10 @@ from neuron import Neuron
 from connection import Connection
 
 class Network:
-    """Represents a neural network using sigmoidal activations."""
+    """
+    Represents a neural network using sigmoidal activations.
+
+    """
 
     def __init__(self, layerCounts, activation=sigmoid.Logistic):
         """Constructs a neural network with a set of layers."""
@@ -49,13 +52,18 @@ class Network:
 
         return error
 
-    def feedforward(self, input):
-        """ Passes the input data through
-         the network and creates the output """
-        assert(len(input) == len(self.neurons[0]),
-               "Input vector does not match the network intut layer")
-        for i in enumerate(input):
-            self.neurons[0][i] = input[i]
+
+    def feedforward(self, inputs):
+        """ Passes the input data through 
+        the network and creates the output """
+
+        assert len(inputs) == len(self.neurons[0]), \
+            "Input vector does not match the network intut layer"
+        for i in enumerate(inputs):
+            self.neurons[0][i] = inputs[i]
         for connection_layer in self.connections:
             for connection in connection_layer:
                 connection.feedforward()
+
+    def backpropagate(self):
+        pass
