@@ -14,31 +14,31 @@ class Network:
 
     """
 
-    def __init__(self, layers, activation=sigmoid.Logistic):
+    def __init__(self, layerCounts, activation=sigmoid.Logistic):
         """Constructs a neural network with a set of layers."""
         self.bias = Neuron(sigmoid.Constant)
 
         self.neurons = []
         self.connections = []
 
-        for layer in enumerate(layers):
+        for layer in enumerate(layerCounts):
             self.neurons.append(list())
             self.connections.append(list())
-            for i in range(0, layers[layer]):
+            for i in range(layerCounts[layer]):
                 # Input neurons shouldn't activate their input.
-                curNeuron = None
+                cur_neuron = None
                 if layer is 0:
-                    curNeuron = Neuron(sigmoid.LinearSigmoid)
+                    cur_neuron = Neuron(sigmoid.LinearSigmoid)
                 else:
-                    curNeuron = Neuron(activation)
+                    cur_neuron = Neuron(activation)
 
-                    #Now connect all neurons in the previous layer to this layer
-                    for anterior_neuron in neurons[layer-1]:
-                        connections[layer]
+                    for anterior in self.neurons[layer-1]:
+                        self.connections[layer].append(
+                            Connection(anterior, cur_neuron))
+                    self.connections[layer].append(
+                        Connection(self.bias, cur_neuron))
 
-                self.neurons[layer].append(curNeuron)
-
-
+                self.neurons[layer].append(cur_neuron)
 
     def train(self, datapair, rate):
         """Trains the network with a certain learning rate on a datapair.
@@ -54,7 +54,8 @@ class Network:
 
     def feedforward(self, inputs):
         """ Passes the input data through the network and creates the output """
-        assert len(inputs) == len(self.neurons[0]), "Input vector does not match the network intut layer"
+        assert len(inputs) == len(self.neurons[0]),
+            "Input vector does not match the network intut layer"
         for i in enumerate(inputs):
             self.neurons[0][i] = inputs[i]
         for connection_layer in self.connections:
