@@ -35,4 +35,4 @@ def logistic(x):
 Tanh = Sigmoid(math.tanh, lambda x: 1 - math.tanh(x) ** 2)
 Logistic = Sigmoid(logistic, lambda x: logistic(x)*(1 - logistic(x)))
 Linear = Sigmoid(lambda x: x, lambda x: 1)
-Const = Sigmoid(lambda x: 1, lambda x: 0)
+Constant = Sigmoid(lambda x: 1, lambda x: 0)
