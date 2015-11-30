@@ -28,7 +28,7 @@ class Network:
                     curNeuron = Neuron(sigmoid.LinearSigmoid)
                 else:
                     curNeuron = Neuron(activation)
-                    
+
                     #Now connect all neurons in the previous layer to this layer
                     for anterior_neuron in neurons[layer-1]:
                         connections[layer]
@@ -50,4 +50,10 @@ class Network:
         return error
 
     def feedforward(self, input):
-
+        """ Passes the input data through the network and creates the output """
+        assert(len(input) == len(self.neurons[0]), "Input vector does not match the network intut layer")
+        for i in enumerate(input):
+            self.neurons[0][i] = input[i]
+        for connection_layer in self.connections:
+            for connection in connection_layer:
+                connection.feedforward()
