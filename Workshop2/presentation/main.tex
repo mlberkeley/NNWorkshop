@@ -109,6 +109,7 @@ Robotics @ Berkeley \\
 \makeatletter
 \newcommand{\verbatimfont}[1]{\renewcommand{\verbatim@font}{\ttfamily#1}}
 \makeatother
+∫
 \begin{document}
 
 \begin{frame}
@@ -323,7 +324,7 @@ Robotics @ Berkeley \\
                 \path[yshift=\nodesep]
                     node[neuron, pin=left: \(a_\y^{\ell}\)] (I-\name) at (0,-0.5 cm -\y  cm) {};
 
-        
+
                 \path[yshift=\nodesep]
                     node[output neuron, pin=right:\(a_i^{\ell+1}\)] (OUTPUT) at (\layersep + 0.5cm,-2.5 cm) {$\sigma$};
 
@@ -377,7 +378,7 @@ Robotics @ Berkeley \\
         \label{fig:test}
         \end{figure}
         \begin{definition}
-          We say that $\sigma : \mathbb{R} \to \mathbb{R}$ is a \textbf{sigmoid activation function} if 
+          We say that $\sigma : \mathbb{R} \to \mathbb{R}$ is a \textbf{sigmoid activation function} if
           $\sigma(x) \to 1 $ as $ x \to \infty$ and $\sigma(x) \to -1\;\text{or}\; 0$ as $ x \to -\infty$
 
         \end{definition}
@@ -390,12 +391,9 @@ Robotics @ Berkeley \\
 
     \subsection{Universal Approximation (Briefly)}
 
-\section{Training}
 
-    \subsection{Nonconvex Optimization}
-    \subsection{Error-Backpropagation}
 
-\section{Deep Learning}
+
 
 
 %------------------------------------------------
@@ -434,6 +432,9 @@ Robotics @ Berkeley \\
     \end{itemize}
 \end{block}
 \end{frame}
+\section{Training}
+
+    \subsection{Nonconvex Optimization}
 \begin{frame}
     \frametitle{Training}
     \begin{itemize}
@@ -444,7 +445,7 @@ Robotics @ Berkeley \\
         \item One such heuristic is called gradient descent
     \end{itemize}
 \end{frame}
-
+    \subsection{Error-Backpropagation}
 \begin{frame}[fragile]
     \frametitle{Program Reference}
     \begin{example}[Creating a network, loading a dataset, and training the net]
@@ -466,19 +467,21 @@ t.interactive_step(<learning_rate> [, optional verbose flag])
         \item The goal is to travel down the gradient (slope at a point ) towards a minima
     \end{itemize}
 \end{frame}
-
+\section{Deep Learning}
 \begin{frame}
     \frametitle{Deep Learning}
     \begin{center}
-        \includegraphics[scale=.27]{deepface}
+        \includegraphics[scale=.34]{deepfaces}
     \end{center}
     \begin{itemize}
+
         \item A more powerful variation of the artificial neural network that uses deep architecture, where there are many hidden layers in a network
         \item Represnts problems as a heirarchy of concepts and representations
         \item Each concept is defined in relation to simpler concepts.
     \end{itemize}
 \end{frame}
 \begin{frame}
+    \frametitle{Deep Learning}
     \begin{itemize}
         \item Neural networks saw a number of falls from popularity
         \item Two main events occurred that brought neural networks back
