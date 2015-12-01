@@ -70,7 +70,7 @@
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage{caption}
 \usepackage{subcaption}
-
+\usepackage{algorithm,algorithmic}
 \usepackage{pgfplots}
 
 \def\layersep{2cm}
@@ -382,7 +382,121 @@ Robotics @ Berkeley \\
 
 
     \begin{frame}
-      \frametitle{}
+      \frametitle{The Feed-Forward Algorithm}
+       \begin{figure}
+        \centering
+        \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+            \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+            \tikzstyle{neuron}=[circle,fill=black!25,minimum size=12pt,inner sep=0pt]
+            \tikzstyle{input neuron}=[neuron, fill=orange];
+            \tikzstyle{output neuron}=[neuron, fill=blue!100];
+            \tikzstyle{hidden neuron}=[neuron, fill=black!50];
+            \tikzstyle{annot} = [text width=3em, text centered]
+
+           \node[hidden neuron, fill=green!25] (BIAS) at (3.25,0) {$\beta$};
+
+            % Draw the input layer nodes
+            \foreach \name / \y in {1,...,2}
+            % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+                \path[yshift=\nodesep]
+                    node[input neuron, pin=left: \(x_\y\)] (I-\name) at (0,-0.5 cm -\y  cm) {};
+
+            % Draw the hidden layer nodes
+            \foreach \name / \y in {1,...,3}
+                \path[yshift=\nodesep]
+                    node[hidden neuron] (H1-\name) at (\layersep,-\y) {};
+
+             \foreach \name / \y in {1,...,2}
+                \path[yshift=\nodesep]
+                    node[hidden neuron] (H2-\name) at (2*\layersep,-0.5cm -\y cm) {};
+
+            % Draw the hidden layer nodes
+            \foreach \name / \y in {1,...,2}
+                \path[yshift=\nodesep]
+                    node[output neuron, pin=right:\(y_{\name}^{(L)}\)] (O-\name) at (3*\layersep,-0.5cm -\y cm) {};
+
+
+            % Connect every node in the input layer with every node in the
+            % hidden layer.
+            \foreach \source in {1,...,2}
+                \foreach \dest in {1,...,3}
+                    \path (I-\source) edge (H1-\dest);
+
+            % Connect every node in the hidden layer with the output layer
+
+            \foreach \source in {1,...,3}
+                \foreach \dest in {1,...,2}
+                    \path (H1-\source) edge (H2-\dest);
+            \foreach \source in {1,...,2}
+                \foreach \dest in {1,...,2}
+                \path (H2-\source) edge (O-\dest);
+
+              %Connect the bias
+                \foreach \dest in {1,...,3}
+                    \path (BIAS) edge (H1-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (H2-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (O-\dest);
+
+            % Annotate the layers
+        \end{tikzpicture}
+        %   \caption[An example of a feed-forward ANN]{An example of a feed-forward ANN,  \(\mathcal{N}\) with four layers.}
+        \end{figure}
+        \begin{itemize}
+          \item The feed-forward algorithm propagates input through the neural network
+          layer by layer.
+          \item On every layer each neuron accumulates input from previous layers
+          and then \emph{activates} through the sigmoid activation function.
+        \end{itemize}
+    \end{frame}
+
+
+    \begin{frame}
+      \frametitle{The Feed-Forward Algorithm}
+
+        \begin{figure}
+        \centering
+            \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+            \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+            \tikzstyle{neuron}=[circle,fill=black!25,minimum size=12pt,inner sep=0pt]
+            \tikzstyle{output neuron}=[neuron, fill=blue!50];
+            \tikzstyle{annot} = [text width=3em, text centered]
+
+            % Draw the input layer nodes
+            \foreach \name / \y in {2}
+            % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+                \path[yshift=\nodesep]
+                    node[neuron, pin=left: \(a_j^{\ell}\)] (INPUT) at (0,-0.5 cm -\y  cm) {$\sigma$};
+
+            \foreach \name / \y in {1,...,3}
+                \path[yshift=\nodesep]
+                    node[output neuron, pin=right:\(a_\name^{\ell+1}\)] (O-\name) at (\layersep + 0.5cm,-0.5cm -0.85*\y cm - 0.3cm ) {};
+
+
+            % Connect every node in the input layer with every node in the
+            % hidden layer.
+            \foreach \source in {1,...,3}
+                    \path (INPUT) edge  node [pos=0.87,above]{\(w_{\source j}^\ell \)} (O-\source);
+
+            % Annotate the layers
+        \end{tikzpicture}
+      \end{figure}
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\FOR{layer $\ell=1$ to $L-1$}
+\FOR{neuron $a_j$ on layer $\ell$}
+\STATE $a_j.activate()$\
+\FOR{neuron $a_i$ on layer $\ell+1$}
+  $a_i.feed(w_{ij} a_j)$
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\caption{An Intuitive Version}
+
+\end{algorithm}
     \end{frame}
 
     \subsection{Universal Approximation (Briefly)}
