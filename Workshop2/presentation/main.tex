@@ -339,7 +339,7 @@ Robotics @ Berkeley \\
         \end{tikzpicture}
       \end{figure}
        \begin{definition}
-         The \textbf{output} of the $i$th neuron on the $(\ell+1)$th layer is given by the weighted some of its inputs
+         The \textbf{output} of the $i$th neuron on the $(\ell+1)$th layer is given by the weighted sum of its inputs
          \[a^{\ell+1}_i = \sigma\left(\sum_{j \in A_i}a_j^{\ell}w_{ij}^\ell + \beta^{\ell}_i\right)\]
          where $A_i$ is the set of anterior neurons.
          \end{definition}
@@ -492,7 +492,7 @@ Robotics @ Berkeley \\
 \FOR{neuron $a_j$ on layer $\ell$}
 \STATE $a_j.activate()$\
 \FOR{neuron $a_i$ on layer $\ell+1$}
-  $a_i.feed(w_{ij} a_j)$
+\STATE $a_i.feed(w_{ij} a_j)$\
 \ENDFOR
 \ENDFOR
 \ENDFOR
@@ -502,15 +502,10 @@ Robotics @ Berkeley \\
 \end{algorithm}
     \end{frame}
 
-    \subsection{Universal Approximation (Briefly)}
-
-
-
-
 
 
 %------------------------------------------------
-
+\subsection{An Implementation}
 \begin{frame}
 \frametitle{Our Network Implementation}
 \begin{block}{Network}
@@ -546,19 +541,58 @@ Robotics @ Berkeley \\
 \end{block}
 \end{frame}
 \section{Training}
-
-    \subsection{Nonconvex Optimization}
 \begin{frame}
     \frametitle{Training}
     \begin{itemize}
         \item The goal of machine learning is to adjust learning parameters to better approximate a function.
         \item For neural networks, these learning parameters are the weights and the bias values.
-        \item We train our network by trying to minimize a loss function:  $\sum (\delta_{i}-y_{i})^2$ where $\delta$ is the expected output and $y$ is the actual output.
+        \item We train our network by trying to minimize a loss function:  $$E = \sum (\delta_{i}-y_{i})^2$$ where $\delta$ is the expected output and $y$ is the actual output.
         \item Minimizing the loss function is a nonconvex problem - we need to develop heuristics to properly train the network
         \item One such heuristic is called gradient descent
     \end{itemize}
 \end{frame}
-    \subsection{Error-Backpropagation}
+
+
+\subsection{Nonconvex Optimization}
+
+
+\begin{frame}
+    \frametitle{Gradient Descent and Error Backpropagation (Calculus Heavy)}
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{gradient_descent}
+    \end{center}
+    \begin{itemize}
+        \item The goal is to travel down the gradient (slope at a point)
+         towards a minima of the error function.
+        \item Error backpropagation is an algorithm that calculates the gradient
+        and then updates the weights according to a \emph{learning rate.}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{definition}
+    We call \(\pmb{\nabla}E\) the \textbf{gradient} of \(E\) if 
+    \[\pmb{\nabla}E = \left(\frac{\partial E}{\partial w_{00}^{(0)}}, 
+    \frac{\partial E}{\partial w_{01}^{(0)}},\dots,
+    \frac{\partial E}{\partial w_{ij}^{(L)}}\right).\]
+    \end{definition}
+
+    \begin{algorithm}[H]
+    \begin{algorithmic}[1]
+    \FOR{every weight $w_{ij}^\ell$}
+    \STATE calculate $\Delta w_{ij}^\ell = -\alpha \frac{\partial E}{\partial w_{ij}^\ell}$ \
+    \STATE $w^\ell_{ij} + \Delta w_{ij}^\ell \to w_{ij}^\ell$ \
+    \ENDFOR
+    \end{algorithmic}
+    \caption{The Weight Update Rule}
+
+    \end{algorithm}
+\end{frame}
+
+
+
+
+\subsection{Training Demo}
 \begin{frame}[fragile]
     \frametitle{Program Reference}
     \begin{example}[Creating a network, loading a dataset, and training the net]
@@ -570,15 +604,17 @@ t.load_data(<string of the filename>)
 t.interactive_step(<learning_rate> [, optional verbose flag])
         \end{verbatim}
     \end{example}
-\end{frame}
-\begin{frame}
-    \frametitle{Gradient Descent}
-    \begin{center}
-        \includegraphics[scale=.15]{descent}
-    \end{center}
-    \begin{itemize}
-        \item The goal is to travel down the gradient (slope at a point ) towards a minima
-    \end{itemize}
+  \begin{example}[A dataset file]
+        \verbatimfont{\scriptsize}
+        \begin{verbatim}
+# This is a sample data file
+# You can comment with ####
+# This dataset has two inputs and one desired output
+{0,1} -> {1};
+{1,0} -> {1};
+{0,0} -> {0.3};
+        \end{verbatim}
+    \end{example}
 \end{frame}
 \section{Deep Learning}
 \begin{frame}
@@ -605,91 +641,6 @@ t.interactive_step(<learning_rate> [, optional verbose flag])
         \item With the availability of better hardware and large datasets (think big data
     \end{itemize}
 \end{frame}
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Verbatim}
-\begin{example}[Theorem Slide Code]
-\begin{verbatim}
-\begin{frame}
-\frametitle{Theorem}
-\begin{theorem}[Mass--energy equivalence]
-$E = mc^2$
-\end{theorem}
-\end{frame}\end{verbatim}
-\end{example}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Figure}
-  \begin{figure}
-  \centering
-  \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
-      \tikzstyle{every pin edge}=[<-,shorten <=1pt]
-      \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-      \tikzstyle{input neuron}=[neuron, fill=orange];
-      \tikzstyle{output neuron}=[neuron, fill=blue!100];
-      \tikzstyle{hidden neuron}=[neuron, fill=black!50];
-      \tikzstyle{annot} = [text width=4em, text centered]
-
-      % Draw the input layer nodes
-      \foreach \name / \y in {1,...,2}
-      % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
-          \path[yshift=0.5cm]
-              node[input neuron, pin=left: \(x_\y\)] (I-\name) at (0,-0.5 cm -\y cm) {};
-
-      % Draw the hidden layer nodes
-      \foreach \name / \y in {1,...,3}
-          \path[yshift=0.5cm]
-              node[hidden neuron] (H1-\name) at (\layersep,-\y cm) {};
-
-       \foreach \name / \y in {1,...,2}
-          \path[yshift=0.5cm]
-              node[hidden neuron] (H2-\name) at (2*\layersep,-0.5cm -\y cm) {};
-
-      % Draw the hidden layer nodes
-      \foreach \name / \y in {1,...,2}
-          \path[yshift=0.5cm]
-              node[output neuron, pin=right:\(\sigma_{\name}^{(L)}\)] (O-\name) at (3*\layersep,-0.5cm -\y cm) {};
-
-
-      % Connect every node in the input layer with every node in the
-      % hidden layer.
-      \foreach \source in {1,...,2}
-          \foreach \dest in {1,...,3}
-              \path (I-\source) edge (H1-\dest);
-
-      % Connect every node in the hidden layer with the output layer
-
-      \foreach \source in {1,...,3}
-          \foreach \dest in {1,...,2}
-              \path (H1-\source) edge (H2-\dest);
-      \foreach \source in {1,...,2}
-          \foreach \dest in {1,...,2}
-          \path (H2-\source) edge (O-\dest);
-
-      % Annotate the layers
-      \node[annot,above of=H1-1, node distance=1cm] (hl) {\(Z^{(1)}\)};
-      \node[annot,left of=hl] {\(Z^{(0)}\)};
-      \node[annot,right of=hl] {\(Z^{(1)}\)};
-      \node[annot,above of=O-1, node distance=2cm] (ol) {\(Z^{(L)}\)};
-  \end{tikzpicture}
-    \caption[An example of a feed-forward ANN]{An example of a feed-forward ANN,  \(\mathcal{N}\) with four layers.}
-  \end{figure}
-
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Citation}
-An example of the \verb|\cite| command to cite within the presentation:\\~
-
-This statement requires citation \cite{p1}.
-\end{frame}
-
-%------------------------------------------------
 
 \begin{frame}
 \frametitle{References}

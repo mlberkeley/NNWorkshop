@@ -1,4 +1,21 @@
-\frametitle{Citation}
-An example of the \verb|\cite| command to cite within the presentation:\\~
-
-This statement requires citation \cite{p1}.
+\frametitle{Program Reference}
+    \begin{example}[Creating a network, loading a dataset, and training the net]
+        \verbatimfont{\scriptsize}
+        \begin{verbatim}
+n = Network(<list of layer sizes>)
+t = Trainer(n)
+t.load_data(<string of the filename>)
+t.interactive_step(<learning_rate> [, optional verbose flag])
+        \end{verbatim}
+    \end{example}
+  \begin{example}[A dataset file]
+        \verbatimfont{\scriptsize}
+        \begin{verbatim}
+# This is a sample data file
+# You can comment with ####
+# This dataset has two inputs and one desired output
+{0,1} -> {1};
+{1,0} -> {1};
+{0,0} -> {0.3};
+        \end{verbatim}
+    \end{example}
