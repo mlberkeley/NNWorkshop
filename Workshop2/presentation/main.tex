@@ -76,6 +76,7 @@
 \def\layersep{2cm}
 \def\nodesep{0.25cm}
 \usepackage{tikz}
+
 %----------------------------------------------------------------------------------------
 %   TITLE PAGE
 %----------------------------------------------------------------------------------------
@@ -105,7 +106,10 @@ Robotics @ Berkeley \\
 }
 
 \date{December 1, 2015} % Date, can be changed to a custom date
-
+\makeatletter
+\newcommand{\verbatimfont}[1]{\renewcommand{\verbatim@font}{\ttfamily#1}}
+\makeatother
+∫
 \begin{document}
 
 \begin{frame}
@@ -148,7 +152,7 @@ Robotics @ Berkeley \\
                 &= \text{step}\left(\sum w_ix_i + b\right)
             \end{aligned}
         \end{equation*}
-        \item Perceptrons are not powerful enough, as seen last time with XOR.
+        \item Single perceptrons are not powerful enough, as seen last time with XOR.
         \item What if we want real valued output for tasks like predicting
          the temparature or stock prices?
         \end{itemize}
@@ -320,7 +324,7 @@ Robotics @ Berkeley \\
                 \path[yshift=\nodesep]
                     node[neuron, pin=left: \(a_\y^{\ell}\)] (I-\name) at (0,-0.5 cm -\y  cm) {};
 
-        
+
                 \path[yshift=\nodesep]
                     node[output neuron, pin=right:\(a_i^{\ell+1}\)] (OUTPUT) at (\layersep + 0.5cm,-2.5 cm) {$\sigma$};
 
@@ -374,7 +378,7 @@ Robotics @ Berkeley \\
         \label{fig:test}
         \end{figure}
         \begin{definition}
-          We say that $\sigma : \mathbb{R} \to \mathbb{R}$ is a \textbf{sigmoid activation function} if 
+          We say that $\sigma : \mathbb{R} \to \mathbb{R}$ is a \textbf{sigmoid activation function} if
           $\sigma(x) \to 1 $ as $ x \to \infty$ and $\sigma(x) \to -1\;\text{or}\; 0$ as $ x \to -\infty$
 
         \end{definition}
@@ -501,12 +505,9 @@ Robotics @ Berkeley \\
 
     \subsection{Universal Approximation (Briefly)}
 
-\section{Training}
 
-    \subsection{Nonconvex Optimization}
-    \subsection{Error-Backpropagation}
 
-\section{Deep Learning}
+
 
 
 %------------------------------------------------
@@ -545,34 +546,66 @@ Robotics @ Berkeley \\
     \end{itemize}
 \end{block}
 \end{frame}
+\section{Training}
 
-
+    \subsection{Nonconvex Optimization}
 \begin{frame}
-\frametitle{Table}
-\begin{table}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
+    \frametitle{Training}
+    \begin{itemize}
+        \item The goal of machine learning is to adjust learning parameters to better approximate a function.
+        \item For neural networks, these learning parameters are the weights and the bias values.
+        \item We train our network by trying to minimize a loss function:  $\sum (\delta_{i}-y_{i})^2$ where $\delta$ is the expected output and $y$ is the actual output.
+        \item Minimizing the loss function is a nonconvex problem - we need to develop heuristics to properly train the network
+        \item One such heuristic is called gradient descent
+    \end{itemize}
 \end{frame}
-
-%------------------------------------------------
-
+    \subsection{Error-Backpropagation}
+\begin{frame}[fragile]
+    \frametitle{Program Reference}
+    \begin{example}[Creating a network, loading a dataset, and training the net]
+        \verbatimfont{\scriptsize}
+        \begin{verbatim}
+n = Network(<list of layer sizes>)
+t = Trainer(n)
+t.load_data(<string of the filename>)
+t.interactive_step(<learning_rate> [, optional verbose flag])
+        \end{verbatim}
+    \end{example}
+\end{frame}
 \begin{frame}
-\frametitle{Theorem}
-\begin{theorem}[Mass--energy equivalence]
-$E = mc^2$
-\end{theorem}
+    \frametitle{Gradient Descent}
+    \begin{center}
+        \includegraphics[scale=.15]{descent}
+    \end{center}
+    \begin{itemize}
+        \item The goal is to travel down the gradient (slope at a point ) towards a minima
+    \end{itemize}
 \end{frame}
+\section{Deep Learning}
+\begin{frame}
+    \frametitle{Deep Learning}
+    \begin{center}
+        \includegraphics[scale=.34]{deepfaces}
+    \end{center}
+    \begin{itemize}
 
-%------------------------------------------------
+        \item A more powerful variation of the artificial neural network that uses deep architecture, where there are many hidden layers in a network
+        \item Represnts problems as a heirarchy of concepts and representations
+        \item Each concept is defined in relation to simpler concepts.
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{Deep Learning}
+    \begin{itemize}
+        \item Neural networks saw a number of falls from popularity
+        \item Two main events occurred that brought neural networks back
+        \begin{itemize}
+            \item The availability of better hardware and more extensive dataset (think big data)
+            \item The creation of more simplified training methods for deep network architectures
+        \end{itemize}
+        \item With the availability of better hardware and large datasets (think big data
+    \end{itemize}
+\end{frame}
 
 \begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
 \frametitle{Verbatim}
