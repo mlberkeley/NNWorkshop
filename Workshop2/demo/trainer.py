@@ -34,7 +34,7 @@ class Trainer:
             inp = inoutpair[0].replace('{', '').replace('}', '').split(',')
             oup = inoutpair[1].replace('{', '').replace('}', '').split(',')
 
-            self.data.append((list(map(int, inp)), list(map(int, oup))))
+            self.data.append((list(map(float, inp)), list(map(float, oup))))
 
     def step(self, rate, verbose=False):
         """Steps through an iteration of training
