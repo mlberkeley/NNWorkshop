@@ -13,22 +13,18 @@ class Connection:
         self.posterior = posterior
         if not weight:
             weight = random.gauss(0, 1)
-        self.weight = weight 
-        self.momentum = 0
-        self.last_delta_weight = 0
+        self.weight = weight
 
     def feedforward(self):
         """ Feeds the weighted output of the anterior
          neuron into the posterior neuron"""
-        self.posterior.feed(self.weight * self.anterior.output)
+
 
     def update_weight(self, rate):
-        grad = self.posterior.error * self.anterior.output
+        # calculate the gradient
+        """ YOUR CODE HERE """
 
-        # perform bprop
-        delta_weight = -(grad * rate) + self.momentum * self.last_delta_weight
-        self.weight += delta_weight
-        self.last_delta_weight = delta_weight
-
+        # update the weight value
+        """ YOUR CODE HERE """
     def __repr__(self):
         return str(self.weight)

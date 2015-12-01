@@ -83,29 +83,33 @@ class Network:
         """Trains the network with a certain learning rate on a datapair.
         Returns the net error across ouytput neurons.
         Assunmes input matches network size."""
-        inp = datapair[0]
+
+        ipt = datapair[0]
         desired = datapair[1]
 
-        self.feedforward(inp)
-        error = self.backpropagate(desired, rate)
+        # feedforward the input
+        """ YOUR CODE HERE """
+
+        # backprop and calculate the error
+        error = """ YOUR CODE HERE """
 
         return error
-
     def feedforward(self, inputs):
         """ Passes the input data through
-        the network and creates the output """
+        the network and creates the output
+        Feeds data into the neuron """
 
         assert len(inputs) == len(self.neurons[0]), \
-            "Input vector does not match the network intut layer"
-        for i in range(len(inputs)):
-            self.neurons[0][i].feed(inputs[i])
+            "Input vector dimeonsion does not match the network input layer dimesion"
 
-        self.bias.activate()
+        """ YOUR CODE HERE """
 
-        for layer in self.neurons:
-            for neuron in layer:
-                neuron.activate()
-
+        # Feed the inputs into the first layer of neurons
+        """ YOUR CODE HERE """
+        # activate the bias
+        """ YOUR CODE HERE """
+        # activate the reset of the neurons
+        """ YOUR CODE HERE """
         return [x.output for x in self.neurons[-1]]
 
     def backpropagate(self, desired, learning_rate):
@@ -118,8 +122,9 @@ class Network:
         # manually set the error coefficients for the output error.
         for output_neuron, loss in zip(self.neurons[-1], losses):
             output_neuron.set_error(loss)
-
+        # start at the end of the layer chain and propogate the data backwards
         for n_layer in self.neurons[:-1][::-1]:
+            # go through the neurons in each layer and each connection in the neurons
             for neuron in n_layer:
                 error_coef = 0
                 for con in neuron.posteriors:
@@ -129,7 +134,7 @@ class Network:
 
                 neuron.set_error(error_coef)
 
-        # fix bias error
+        # update the bias error
         for con in self.bias.posteriors:
             con.update_weight(learning_rate)
 
@@ -150,11 +155,11 @@ class Network:
     def save(self, filename):
         """Requires json pickle."""
         f = open(filename, "wb")
-        
+
         pickle.dump(self, f)
 
     def load(filename):
         """Requires json pickle."""
         f = open(filename, "rb")
-        
+
         return pickle.load(f)
