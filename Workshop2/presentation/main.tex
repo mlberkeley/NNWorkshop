@@ -62,12 +62,16 @@
 %\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
 %\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
 
-%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
 }
 
 \usepackage{graphicx} % Allows including images
 \graphicspath{ {images/} }
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{pgfplots}
 
 \def\layersep{2cm}
 \def\nodesep{0.25cm}
@@ -141,7 +145,7 @@ Robotics @ Berkeley \\
                  0\ \text{otherwise}
                 \end{array}
                 \right. \\
-                &= \frac{\text{sign}\left(\sum w_ix_i + b\right) + 1}{2}
+                &= \text{step}\left(\sum w_ix_i + b\right)
             \end{aligned}
         \end{equation*}
         \item Perceptrons are not powerful enough, as seen last time with XOR.
@@ -162,6 +166,8 @@ Robotics @ Berkeley \\
             \tikzstyle{hidden neuron}=[neuron, fill=black!50];
             \tikzstyle{annot} = [text width=3em, text centered]
 
+           \node[hidden neuron, fill=green!25] (BIAS) at (3.25,0) {$\beta$};
+
             % Draw the input layer nodes
             \foreach \name / \y in {1,...,2}
             % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
@@ -180,7 +186,7 @@ Robotics @ Berkeley \\
             % Draw the hidden layer nodes
             \foreach \name / \y in {1,...,2}
                 \path[yshift=\nodesep]
-                    node[output neuron, pin=right:\(\sigma_{\name}^{(L)}\)] (O-\name) at (3*\layersep,-0.5cm -\y cm) {};
+                    node[output neuron, pin=right:\(y_{\name}^{(L)}\)] (O-\name) at (3*\layersep,-0.5cm -\y cm) {};
 
 
             % Connect every node in the input layer with every node in the
@@ -198,6 +204,14 @@ Robotics @ Berkeley \\
                 \foreach \dest in {1,...,2}
                 \path (H2-\source) edge (O-\dest);
 
+              %Connect the bias
+                \foreach \dest in {1,...,3}
+                    \path (BIAS) edge (H1-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (H2-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (O-\dest);
+
             % Annotate the layers
         \end{tikzpicture}
         %   \caption[An example of a feed-forward ANN]{An example of a feed-forward ANN,  \(\mathcal{N}\) with four layers.}
@@ -214,9 +228,162 @@ Robotics @ Berkeley \\
         \end{itemize}
     \end{frame}
 
-    \subsection{How They Work} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
+    \subsection{How It Works} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
+    \begin{frame}
+        \frametitle{A Bit of Notation}
+             \begin{figure}
+        \centering
+        \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+            \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+            \tikzstyle{neuron}=[circle,fill=black!25,minimum size=12pt,inner sep=0pt]
+            \tikzstyle{input neuron}=[neuron, fill=orange];
+            \tikzstyle{output neuron}=[neuron, fill=blue!100];
+            \tikzstyle{hidden neuron}=[neuron, fill=black!50];
+            \tikzstyle{annot} = [text width=3em, text centered]
+
+           \node[hidden neuron, fill=green!25] (BIAS) at (3.25,0) {$\beta$};
+
+            % Draw the input layer nodes
+            \foreach \name / \y in {1,...,2}
+            % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+                \path[yshift=\nodesep]
+                    node[input neuron, pin=left: \(x_\y\)] (I-\name) at (0,-0.5 cm -\y  cm) {};
+
+            % Draw the hidden layer nodes
+            \foreach \name / \y in {1,...,3}
+                \path[yshift=\nodesep]
+                    node[hidden neuron] (H1-\name) at (\layersep,-\y) {};
+
+             \foreach \name / \y in {1,...,2}
+                \path[yshift=\nodesep]
+                    node[hidden neuron] (H2-\name) at (2*\layersep,-0.5cm -\y cm) {};
+
+            % Draw the hidden layer nodes
+            \foreach \name / \y in {1,...,2}
+                \path[yshift=\nodesep]
+                    node[output neuron, pin=right:\(y_{\name}^{(L)}\)] (O-\name) at (3*\layersep,-0.5cm -\y cm) {};
 
 
+            % Connect every node in the input layer with every node in the
+            % hidden layer.
+            \foreach \source in {1,...,2}
+                \foreach \dest in {1,...,3}
+                    \path (I-\source) edge (H1-\dest);
+
+            % Connect every node in the hidden layer with the output layer
+
+            \foreach \source in {1,...,3}
+                \foreach \dest in {1,...,2}
+                    \path (H1-\source) edge (H2-\dest);
+            \foreach \source in {1,...,2}
+                \foreach \dest in {1,...,2}
+                \path (H2-\source) edge (O-\dest);
+
+              %Connect the bias
+                \foreach \dest in {1,...,3}
+                    \path (BIAS) edge (H1-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (H2-\dest);
+                \foreach \dest in {1,...,2}
+                    \path (BIAS) edge (O-\dest);
+
+            % Annotate the layers
+        \end{tikzpicture}
+        %   \caption[An example of a feed-forward ANN]{An example of a feed-forward ANN,  \(\mathcal{N}\) with four layers.}
+        \end{figure}
+
+        \begin{definition}
+          A \textbf{weight} on the $\ell$th layer between the $j$th neuron on that layer and
+          the $i$th neuron on the next layer is denoted $w^{\ell}_{ij} \in \mathbb{R}.$
+        \end{definition}
+        \begin{definition}
+          The \textbf{input} to the neural network is a vector $\pmb x \in \mathbb{R}^n$ and the
+          \textbf{output} is a vector $\pmb y \in \mathbb{R}^m.$
+        \end{definition}
+    \end{frame}
+
+    \begin{frame}
+    \frametitle{A Bit of Notation}
+      \begin{figure}
+        \centering
+            \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+            \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+            \tikzstyle{neuron}=[circle,fill=black!25,minimum size=12pt,inner sep=0pt]
+            \tikzstyle{output neuron}=[neuron, fill=blue!50];
+            \tikzstyle{annot} = [text width=3em, text centered]
+
+           \node[neuron, fill=green!25] (BIAS) at (1.3,-1.25) {$\beta$};
+
+            % Draw the input layer nodes
+            \foreach \name / \y in {1,...,3}
+            % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+                \path[yshift=\nodesep]
+                    node[neuron, pin=left: \(a_\y^{\ell}\)] (I-\name) at (0,-0.5 cm -\y  cm) {};
+
+        
+                \path[yshift=\nodesep]
+                    node[output neuron, pin=right:\(a_i^{\ell+1}\)] (OUTPUT) at (\layersep + 0.5cm,-2.5 cm) {$\sigma$};
+
+
+            % Connect every node in the input layer with every node in the
+            % hidden layer.
+            \foreach \source in {1,...,3}
+                    \path (I-\source) edge  node [pos=0.15, above]{\(w_{i\source}^\ell \)} (OUTPUT);
+
+              \path (BIAS) edge node [midway, above]{\(\beta_{i}^\ell \)} (OUTPUT);
+
+            % Annotate the layers
+        \end{tikzpicture}
+      \end{figure}
+       \begin{definition}
+         The \textbf{output} of the $i$th neuron on the $(\ell+1)$th layer is given by the weighted some of its inputs
+         \[a^{\ell+1}_i = \sigma\left(\sum_{j \in A_i}a_j^{\ell}w_{ij}^\ell + \beta^{\ell}_i\right)\]
+         where $A_i$ is the set of anterior neurons.
+         \end{definition}
+
+    \end{frame}
+
+
+    \begin{frame}
+      \frametitle{The Sigmoid Activation Function}
+      \begin{figure}
+          \centering
+          \begin{tikzpicture}
+              \begin{axis}[
+                axis lines=middle,
+                clip=false,
+                ymin=-1,
+                ymax=1.2,
+                ylabel=$\sigma(x)$,
+                xlabel=$x$,
+                every axis y label/.style={
+                    at={(ticklabel* cs:1.02)},
+                    anchor=south,
+                },
+                legend pos=north west,
+                width=5.6cm,
+                ytick={-1,1}
+              ]
+              \addplot+[mark=none,samples=200,unbounded coords=jump] {tanh(x)} node[right,pos=.57,black] {$\tanh(x)$};;
+              \addplot+[const plot, no marks, thick] coordinates {(-4,0) (0,0) (0,1) (4,1)} node[left,pos=.5,black] {$step(x)$};
+              \addplot+[mark=none,samples=200,unbounded coords=jump] {1/(1+exp(-x))} node[above,pos=.1,black] {$\frac{1}{1+e^{-x}}$};;
+              \end{axis}
+          \end{tikzpicture}
+
+        \caption{Two sigmoid functions and the perceptron $step(x).$}
+        \label{fig:test}
+        \end{figure}
+        \begin{definition}
+          We say that $\sigma : \mathbb{R} \to \mathbb{R}$ is a \textbf{sigmoid activation function} if 
+          $\sigma(x) \to 1 $ as $ x \to \infty$ and $\sigma(x) \to -1\;\text{or}\; 0$ as $ x \to -\infty$
+
+        \end{definition}
+    \end{frame}
+
+
+    \begin{frame}
+      \frametitle{}
+    \end{frame}
 
     \subsection{Universal Approximation (Briefly)}
 
