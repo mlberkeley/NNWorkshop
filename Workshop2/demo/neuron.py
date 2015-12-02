@@ -20,16 +20,17 @@ class Neuron:
         self.gradient_net = 0
         self.error = 0
 
-    def activate(self):
-        """ Applies the sigmoid function to the neuron"s net, generating the
-        neuron output, then resets the net. """
-
-
     def feed(self, input_partial):
         """ Passes in numerical input to sum up
          in the neuron"s activation net."""
+         
 
+    def activate(self):
+        """ Applies the sigmoid function to the neuron"s net, generating the
+        neuron output, then resets the net. """
+        self.gradient_net = self.sigmoid.derivative(self.net)
 
 
     def set_error(self, error_coef):
         """Updates the error coefficent for the neuron."""
+        set.error = error_coef * self.gradient_net
